@@ -1,0 +1,8 @@
+UP_LEFT    = "up_left"
+UP         = "up"
+UP_RIGHT   = "up_right"
+RIGHT      = "right"
+LEFT       = "left"
+DOWN_LEFT  = "down_left"
+DOWN       = "down"
+DOWN_RIGHT = "down_right"

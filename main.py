@@ -1,0 +1,86 @@
+import pygame
+import sys
+from actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
+import actions.map_actions.map_actions as map_actions
+from utils.keyboard_controller import KeyboardController
+from config.analog_control_const import UP, UP_LEFT, UP_RIGHT, RIGHT, LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT
+
+if __name__ == "__main__":
+    UP = "up"
+    font_size = 36
+    scale = 4  # zoom factor for visibility
+    cols, rows = 4, 2
+    padding = 10
+    label_h = 20
+    pygame.init()
+    pygame.display.set_caption("Test")
+    screen = pygame.display.set_mode((640,480), pygame.RESIZABLE)
+    frames = load_character_frames()
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, font_size)
+    texture_surface = font.render("Hello, Craig", True,(255,255,255))
+
+    step = 200  #200 pixel per sec
+
+    keyboard_controller = KeyboardController (step)
+
+
+    print("Jackal is starting")
+
+    starting_x = 0
+    starting_y = 0
+
+    #position and movement
+    x=starting_x
+    y=starting_y
+    #starting direction
+    current_direction=UP
+
+
+    running = True
+
+    layout = [
+        [UP_LEFT, UP, UP_RIGHT, RIGHT],
+        [LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT],
+    ]
+
+    #pygame.display.flip() #show it
+
+
+    while running:
+
+        #show_character_test_screen(screen, layout, frames, font, padding, scale, label_h)
+        
+        dt = clock.tick(60)/1000.0   # CAP AT 60FPS, dt = seconds since last frame
+        # make game dialog closeable
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+            #if event.type == pygame.VIDEORESIZE:   #handled automatically in pygame 2.x
+            #   screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+
+            #key input
+        
+
+        #this line below must be outside the event for loop, otherwise, holding the key will have 1 sec delay before it continues moving
+        #by putting outside the for loop and in the game main loop, it will be run as check key press every frame actively
+        #if putting inside the for event loop, that will rely on the keyboard event, that's rely on the operating system
+        current_direction,x,y = keyboard_controller.actionPerform(x,y,current_direction,dt)   
+        
+        scaled= get_direction(screen,layout, x,y,padding,scale,label_h,frames, current_direction)
+        #display text
+        screen.fill((120, 111, 77))  #erase everything , must be put within main loop and before drawing
+        #screen.blit(texture_surface, (x,y))  #draw stuff
+        screen.blit(scaled, (x, y))
+        pygame.display.flip() #show it
+
+    pygame.quit()
+    sys.exit()
+
+
+
+
+
