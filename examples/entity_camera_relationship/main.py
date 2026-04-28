@@ -289,11 +289,12 @@ class Camera:
     Everything outside is simply not drawn.
     """
 
-    def __init__(self, screen_w: int, screen_h: int):
+    def __init__(self, screen_w: int, screen_h: int, player:Entity):
         self.screen_w = screen_w
         self.screen_h = screen_h
-        self.x = 0.0   # world x of the camera's left edge
-        self.y = 0.0   # world y of the camera's top edge
+        self.x = player.world_x-screen_w/2.5   # world x of the camera's left edge
+        self.y = player.world_y-screen_h/2.5 * 2
+           # world y of the camera's top edge    
 
     def follow(self, entity: Entity, map_w: int, map_h: int) -> None:
         """
@@ -338,10 +339,24 @@ class Camera:
         center_y = entity.world_y + entity.draw_h / 2
 
         # Ideal camera top-left to center on that point
-        target_x = center_x - self.screen_w / 2
-        target_y = center_y - self.screen_h / 2
 
+        #original always center
+        #target_x = center_x - self.screen_w / 2
+        target_x = self.x
+        target_y = self.y
+
+        if(center_x - target_x) <= self.screen_w / 3:
+            target_x = center_x - self.screen_w / 3
+        elif (center_x - target_x) >= self.screen_w / 3 * 2:
+            target_x = center_x - self.screen_w / 3 * 2
+
+
+        if(center_y - target_y) <= self.screen_h / 2:
+            target_y = center_y - self.screen_h / 2
+        elif(center_y - target_y) >= self.screen_h / 5 * 4:
+            target_y = center_y - self.screen_h / 5 * 4
         # Clamp: don't scroll past map edges
+        #self.x = max(0.0, min(target_x, float(map_w - self.screen_w)))
         self.x = max(0.0, min(target_x, float(map_w - self.screen_w)))
         self.y = max(0.0, min(target_y, float(map_h - self.screen_h)))
 
@@ -461,7 +476,7 @@ def main() -> None:
     # Spawn the player near the center of the world map
     player = Entity(world_x=map_w / 2, world_y=map_h / 2, frames=frames)
 
-    camera = Camera(SCREEN_W, SCREEN_H)
+    camera = Camera(SCREEN_W, SCREEN_H, player)
 
     running = True
     while running:
