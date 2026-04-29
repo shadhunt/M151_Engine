@@ -17,15 +17,16 @@ Direction map (green car = row 0–1, col 0–3):
 """
 import sys
 from pathlib import Path
-isDebug = False
+
+isDebug = True
 if isDebug:
-    sys.path.append(str(Path(__file__).parent.parent))
-    
+    print("project path is:"+str(Path(__file__).parent.parent.parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 import os
 import pygame
 from pygame.surface import Surface
 import config.path_config as path_config
-
+from config.analog_control_const import UP,UP_LEFT,LEFT,DOWN_LEFT,DOWN,DOWN_RIGHT,RIGHT,UP_RIGHT
 
 
 
@@ -56,16 +57,6 @@ _COL_X = [10 + col * 33 for col in range(4)]   # [10, 43, 76, 109]
 # Row content y-starts for the green car (rows 0 and 1 of the sheet)
 # Row 0 starts at y=25, row 1 starts at y=58  (separated by a 1px line at y=57)
 _ROW_Y = [25, 58]
-
-# Direction constants
-UP_LEFT    = "up_left"
-UP         = "up"
-UP_RIGHT   = "up_right"
-RIGHT      = "right"
-LEFT       = "left"
-DOWN_LEFT  = "down_left"
-DOWN       = "down"
-DOWN_RIGHT = "down_right"
 
 # Maps direction → (sheet_row, sheet_col)
 _DIRECTION_COORDS = {
@@ -112,15 +103,26 @@ def load_character_frames() -> dict[str, pygame.Surface]:
 
     return frames
 
-def get_direction(screen:Surface,layout:list[list[str]], x,y,padding,scale,label_h,frames, direction:str):
+def get_direction(scale,frames, direction:str):
     if isDebug:
         print(f"direction received: '{direction}'")                                                                                                                                                                                                                                                                                 
         print(f"valid keys: {list(_DIRECTION_COORDS.keys())}")  
-    c,r = _DIRECTION_COORDS.get(direction)
-#    x = padding + c * (SPRITE_W * scale + padding)
-#    y = padding + r * (SPRITE_H * scale + padding + label_h)
 
     scaled = pygame.transform.scale(frames[direction], (SPRITE_W * scale, SPRITE_H * scale))
+    '''
+    ● It takes the small 32×32 sprite and enlarges it for display.                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                              
+    Breaking it down piece by piece:            
+                                                                                                                                                                                                                                                                                                                                
+    - frames[direction] — looks up the sprite for the current direction in your dictionary. For example if direction = "up", it fetches the 32×32 surface of the car facing up.                                                                                                                                                 
+    - (SPRITE_W * scale, SPRITE_H * scale) — calculates the new size. SPRITE_W = 32, scale = 4, so 32 * 4 = 128. The new size is (128, 128).                                                                                                                                                                                    
+    - pygame.transform.scale(...) — stretches the 32×32 surface to 128×128.
+    - scaled = — stores the enlarged surface so it can be returned and drawn on screen.                                                                                                                                                                                                                                         
+                                                
+    So in plain English: "take the tiny sprite for this direction and zoom it up 4x so it's visible on screen."                                                                                                                                                                                                                 
+                                            
+    Without this line, the car would be drawn as a tiny 32×32 pixel square — barely visible on a modern screen
+    '''
     return scaled
 
 #def show_character_direction(screen:Surface,layout:list[list[str]],direction_num):
@@ -250,7 +252,7 @@ if __name__ == "__main__":
     ]
 
     screen.fill((120, 111, 77))
-    #show_character_test_screen(screen, layout)
+    show_character_test_screen(screen, layout, frames, font, padding, scale,label_h)
     '''
     for r, row_dirs in enumerate(layout):
         for c, direction in enumerate(row_dirs):

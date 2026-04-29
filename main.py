@@ -13,7 +13,6 @@ from utils.keyboard_controller import KeyboardController
 from config.analog_control_const import UP, UP_LEFT, UP_RIGHT, RIGHT, LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT
 
 if __name__ == "__main__":
-    UP = "up"
     font_size = 36
     scale = 4  # zoom factor for visibility
     cols, rows = 4, 2
@@ -77,7 +76,7 @@ if __name__ == "__main__":
         #if putting inside the for event loop, that will rely on the keyboard event, that's rely on the operating system
         current_direction,x,y = keyboard_controller.actionPerform(x,y,current_direction,dt)   
         
-        scaled= get_direction(screen,layout, x,y,padding,scale,label_h,frames, current_direction)
+        scaled= get_direction(scale, frames, current_direction)
         #display text
         screen.fill((120, 111, 77))  #erase everything , must be put within main loop and before drawing
         #screen.blit(texture_surface, (x,y))  #draw stuff

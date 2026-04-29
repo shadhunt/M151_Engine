@@ -1,4 +1,5 @@
 import pygame
+from config.analog_control_const import UP,UP_LEFT,LEFT,DOWN_LEFT,DOWN,DOWN_RIGHT,RIGHT,UP_RIGHT
 class KeyboardController:
     '''
     - The 4 key states (up/down/left/right) are captured first, then a single     
@@ -12,15 +13,6 @@ class KeyboardController:
    you want equal speed in all 8 directions, multiply diagonal deltas by 0.707  
   (i.e., 1/√2). Happy to add that if needed.
   '''
-
-    UP_LEFT    = "up_left"
-    UP         = "up"
-    UP_RIGHT   = "up_right"
-    RIGHT      = "right"
-    LEFT       = "left"
-    DOWN_LEFT  = "down_left"
-    DOWN       = "down"
-    DOWN_RIGHT = "down_right"
     def __init__(self,step):
         self.step = step
 
@@ -33,27 +25,27 @@ class KeyboardController:
         match (up, down, left, right):
             case (True, False, True, False):
                 x -= self.step * dt; y -= self.step * dt
-                current_direction = self.UP_LEFT
+                current_direction = UP_LEFT
             case (True, False, False, True):
                 x += self.step * dt; y -= self.step * dt
-                current_direction = self.UP_RIGHT
+                current_direction = UP_RIGHT
             case (False, True, True, False):
                 x -= self.step * dt; y += self.step * dt
-                current_direction = self.DOWN_LEFT
+                current_direction = DOWN_LEFT
             case (False, True, False, True):
                 x += self.step * dt; y += self.step * dt
-                current_direction = self.DOWN_RIGHT
+                current_direction = DOWN_RIGHT
             case (True, False, False, False):
                 y -= self.step * dt
-                current_direction = self.UP
+                current_direction = UP
             case (False, True, False, False):
                 y += self.step * dt
-                current_direction = self.DOWN
+                current_direction = DOWN
             case (False, False, True, False):
                 x -= self.step * dt
-                current_direction = self.LEFT
+                current_direction = LEFT
             case (False, False, False, True):
                 x += self.step * dt
-                current_direction = self.RIGHT
+                current_direction = RIGHT
 
         return current_direction, x, y

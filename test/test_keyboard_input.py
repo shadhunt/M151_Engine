@@ -77,7 +77,7 @@ if __name__ == "__main__":
         #if putting inside the for event loop, that will rely on the keyboard event, that's rely on the operating system
         current_direction,x,y = keyboard_controller.actionPerform(x,y,current_direction,dt)   
         
-        scaled= get_direction(screen,layout, x,y,padding,scale,label_h,frames, current_direction)
+        scaled= get_direction(scale, frames, current_direction)
         #display text
         screen.fill((120, 111, 77))  #erase everything , must be put within main loop and before drawing
         #screen.blit(texture_surface, (x,y))  #draw stuff
