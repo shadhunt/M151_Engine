@@ -19,7 +19,7 @@ import sys
 # --- Config ---
 SCREEN_W, SCREEN_H = 960, 540
 SCROLL_SPEED = 300          # pixels per second
-MAP_PATH = "assets/background/land/test-land.png"
+MAP_PATH = "assets/images/background/land/test-land.png"
 
 def display_map():
     pygame.init()
@@ -66,4 +66,4 @@ def display_map():
         pygame.display.flip()
 
 if __name__ == "__main__":
-    main()
+    display_map()
