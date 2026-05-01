@@ -1,6 +1,6 @@
 import pygame
 import sys
-
+from config.path_config import MAP_PATH
 '''
   ┌──────────────┬──────────────────────────────────────────────────────────┐                                                                                                                                                                                                                                                 
   │    Thing     │                          Detail                          │                                                                                                                                                                                                                                               
@@ -19,7 +19,6 @@ import sys
 # --- Config ---
 SCREEN_W, SCREEN_H = 960, 540
 SCROLL_SPEED = 300          # pixels per second
-MAP_PATH = "assets/images/background/land/test-land.png"
 
 def display_map():
     pygame.init()

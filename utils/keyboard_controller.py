@@ -24,16 +24,16 @@ class KeyboardController:
         right = keys[pygame.K_d]
         match (up, down, left, right):
             case (True, False, True, False):
-                x -= self.step * dt; y -= self.step * dt
+                x -= self.step * dt * 0.707; y -= self.step * dt * 0.707
                 current_direction = UP_LEFT
             case (True, False, False, True):
-                x += self.step * dt; y -= self.step * dt
+                x += self.step * dt * 0.707; y -= self.step * dt * 0.707
                 current_direction = UP_RIGHT
             case (False, True, True, False):
-                x -= self.step * dt; y += self.step * dt
+                x -= self.step * dt * 0.707; y += self.step * dt * 0.707
                 current_direction = DOWN_LEFT
             case (False, True, False, True):
-                x += self.step * dt; y += self.step * dt
+                x += self.step * dt * 0.707; y += self.step * dt * 0.707
                 current_direction = DOWN_RIGHT
             case (True, False, False, False):
                 y -= self.step * dt
