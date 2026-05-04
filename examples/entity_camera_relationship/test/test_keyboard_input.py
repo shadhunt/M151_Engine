@@ -11,15 +11,20 @@ from game.actions.unit_actions.main_character_actions import load_character_fram
 import game.actions.map_actions.map_actions as map_actions
 from utils.keyboard_controller import KeyboardController
 from config.analog_control_const import UP, UP_LEFT, UP_RIGHT, RIGHT, LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT
-from config.properties import FONT_SIZE, SCALE, PADDING, LABEL_H, WINDOW_SIZE, FPS , TRANSPARENT_COLOR
 
 if __name__ == "__main__":
+    UP = "up"
+    font_size = 36
+    scale = 4  # zoom factor for visibility
+    cols, rows = 4, 2
+    padding = 10
+    label_h = 20
     pygame.init()
     pygame.display.set_caption("Test")
-    screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
+    screen = pygame.display.set_mode((640,480), pygame.RESIZABLE)
     frames = load_character_frames()
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, FONT_SIZE)
+    font = pygame.font.Font(None, font_size)
     texture_surface = font.render("Hello, Craig", True,(255,255,255))
 
     step = 200  #200 pixel per sec
@@ -53,8 +58,8 @@ if __name__ == "__main__":
 
         #show_character_test_screen(screen, layout, frames, font, padding, scale, label_h)
         
-        dt = clock.tick(FPS)/1000.0   # CAP AT 60FPS, dt = seconds since last frame
-        # make game dialog closeabled
+        dt = clock.tick(60)/1000.0   # CAP AT 60FPS, dt = seconds since last frame
+        # make game dialog closeable
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -72,9 +77,9 @@ if __name__ == "__main__":
         #if putting inside the for event loop, that will rely on the keyboard event, that's rely on the operating system
         current_direction,x,y = keyboard_controller.actionPerform(x,y,current_direction,dt)   
         
-        scaled= get_direction(SCALE,frames,current_direction)
+        scaled= get_direction(scale, frames, current_direction)
         #display text
-        screen.fill(TRANSPARENT_COLOR)  #erase everything , must be put within main loop and before drawing
+        screen.fill((120, 111, 77))  #erase everything , must be put within main loop and before drawing
         #screen.blit(texture_surface, (x,y))  #draw stuff
         screen.blit(scaled, (x, y))
         pygame.display.flip() #show it
