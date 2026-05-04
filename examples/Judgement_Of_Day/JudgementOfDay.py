@@ -1,7 +1,7 @@
 from Player import Player
 from Enemy import Enemy
 def allDie(unit):
-    unit.destroyed()
+    unit.destroyed(self)
 
 if __name__ == "__main__":
     player = Player()

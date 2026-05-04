@@ -1,5 +1,5 @@
 class Enemy:
-    def destroyed():
+    def destroyed(self):
         print("Enemy died")
     
     def screenBoundaryCheck():

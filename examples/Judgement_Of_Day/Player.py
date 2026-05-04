@@ -1,6 +1,6 @@
 from Unit import Unit
 class Player(Unit):
-    def destroyed():
+    def destroyed(self):
         print("Player died")
     
     def screenBoundaryCheck():
