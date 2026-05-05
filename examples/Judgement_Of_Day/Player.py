@@ -3,5 +3,5 @@ class Player(Unit):
     def destroyed(self):
         print("Player died")
     
-    def screenBoundaryCheck():
+    def screenBoundaryCheck(self):
         print("screen boundary check")
