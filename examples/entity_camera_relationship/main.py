@@ -14,8 +14,8 @@ sys.path.append(FRAMEWORK_ROOT)
 #set project path
 from properties import FONT_SIZE, SCALE, PADDING, LABEL_H, WINDOW_SIZE, FPS , TRANSPARENT_COLOR, STEP_PIXEL_PER_SEC
 from config.analog_control_const import UP, UP_LEFT, UP_RIGHT, RIGHT, LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT
-from game.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
-import game.actions.map_actions.map_actions as map_actions
+from gameengine.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
+import gameengine.actions.map_actions.map_actions as map_actions
 from utils.keyboard_controller import KeyboardController
 
 
