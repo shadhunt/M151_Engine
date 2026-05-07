@@ -2,7 +2,7 @@ import pygame
 import sys
 from pathlib import Path
 
-FRAMEWORK_ROOT = str( Path(__file__).resolve().parents[1])    # set parents level to 2 if want to run in template folder directly, otherwise, set to 1
+FRAMEWORK_ROOT = str( Path(__file__).resolve().parents[2])    # set parents level to 2 if want to run in template folder directly, otherwise, set to 1
 DEBUG = True
 if DEBUG:
     print(f"FRAMEWORK_ROOT: {FRAMEWORK_ROOT}")
