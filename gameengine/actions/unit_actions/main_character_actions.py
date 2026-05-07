@@ -26,8 +26,7 @@ import os
 import pygame
 from pygame.surface import Surface
 import config.path_config as path_config
-from config.analog_control_const import UP,UP_LEFT,LEFT,DOWN_LEFT,DOWN,DOWN_RIGHT,RIGHT,UP_RIGHT
-
+from config.analog_control_const import UP, _DIRECTION_COORDS
 
 
 # Path relative to this file
@@ -59,16 +58,7 @@ _COL_X = [10 + col * 33 for col in range(4)]   # [10, 43, 76, 109]
 _ROW_Y = [25, 58]
 
 # Maps direction → (sheet_row, sheet_col)
-_DIRECTION_COORDS = {
-    UP_LEFT:    (0, 0),
-    UP:         (0, 1),
-    UP_RIGHT:   (0, 2),
-    RIGHT:      (0, 3),
-    LEFT:       (1, 0),
-    DOWN_LEFT:  (1, 1),
-    DOWN:       (1, 2),
-    DOWN_RIGHT: (1, 3),
-}
+
 
 
 def load_character_frames() -> dict[str, pygame.Surface]:
