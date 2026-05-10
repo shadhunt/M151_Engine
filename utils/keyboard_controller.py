@@ -49,3 +49,47 @@ class KeyboardController:
                 current_direction = RIGHT
 
         return current_direction, x, y
+
+
+    def read_keys() -> tuple[float, float, str | None]:
+        """
+        Poll WASD keys. Returns (dx, dy, direction_string_or_None).
+
+        dx and dy are unit-length components of a movement direction.
+        They get multiplied by speed and dt inside Entity.update().
+
+        WHY NORMALIZE DIAGONALS?
+        -------------------------
+        Pure cardinal input (e.g., W only):
+            dx=0, dy=-1  → magnitude = √(0²+1²) = 1.0  ✓
+
+        Naive diagonal input (W+D):
+            dx=1, dy=-1  → magnitude = √(1²+1²) = 1.414  ✗
+
+        The entity would move 41% faster diagonally. To fix this, multiply
+        diagonal components by 1/√2 ≈ 0.707, which scales them so the
+        combined vector has magnitude 1.0 again:
+
+            dx = 0.707, dy = -0.707  → magnitude = √(0.707²+0.707²) = 1.0  ✓
+        """
+        DIAG = 0.707   # 1 / √2
+
+        keys = pygame.key.get_pressed()
+        w = keys[pygame.K_w]
+        s = keys[pygame.K_s]
+        a = keys[pygame.K_a]
+        d = keys[pygame.K_d]
+
+        # Python's match statement on a tuple of booleans is a clean way to
+        # handle 8-directional logic without a chain of if/elif.
+        # Opposing keys (W+S or A+D) fall through to the default: no movement.
+        match (w, s, a, d):
+            case (True,  False, True,  False): return (-DIAG, -DIAG, "up_left")
+            case (True,  False, False, True):  return ( DIAG, -DIAG, "up_right")
+            case (False, True,  True,  False): return (-DIAG,  DIAG, "down_left")
+            case (False, True,  False, True):  return ( DIAG,  DIAG, "down_right")
+            case (True,  False, False, False): return ( 0.0,  -1.0,  "up")
+            case (False, True,  False, False): return ( 0.0,   1.0,  "down")
+            case (False, False, True,  False): return (-1.0,   0.0,  "left")
+            case (False, False, False, True):  return ( 1.0,   0.0,  "right")
+            case _:                            return ( 0.0,   0.0,  None)
