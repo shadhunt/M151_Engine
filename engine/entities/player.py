@@ -1,5 +1,4 @@
 from engine.entities.entity import Entity
 class Player(Entity):
-    def __init__(self, name, health, position):
-        super().__init__(health, position)
-        self.name = name
+    def __init__(self, world_x, world_y, frames):
+        super().__init__(world_x, world_y, frames)        

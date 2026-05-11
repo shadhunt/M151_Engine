@@ -18,15 +18,16 @@ Direction map (green car = row 0–1, col 0–3):
 import sys
 from pathlib import Path
 
-isDebug = True
+FRAMEWORK_ROOT = str( Path(__file__).resolve().parents[3])    # set parents level to 2 if want to run in template folder directly, otherwise, set to 1
+isDebug = False
 if isDebug:
     print("project path is:"+str(Path(__file__).parent.parent.parent.parent))
-sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-import os
+sys.path.append(FRAMEWORK_ROOT)
 import pygame
 from pygame.surface import Surface
-import config.path_config as path_config
-from config.analog_control_const import UP, _DIRECTION_COORDS
+from config.path_config import *
+from config.properties import *
+from config.analog_control_const import *
 
 
 # Path relative to this file
@@ -42,25 +43,7 @@ _SHEET_PATH = (Path(__file__).parent.      #in action
         / "characters.png")
 
 '''
-
-_SHEET_PATH = path_config.ASSETS_DIR / "characters" / "characters.png"
-# Sprite dimensions
-SPRITE_W = 32
-SPRITE_H = 32
-
-# Grid coordinates inside the spritesheet
-# Column content x-starts (0-indexed): col0=10, col1=43, col2=76, col3=109
-# Separator width is 1px, so spacing = 33px
-_COL_X = [10 + col * 33 for col in range(4)]   # [10, 43, 76, 109]
-
-# Row content y-starts for the green car (rows 0 and 1 of the sheet)
-# Row 0 starts at y=25, row 1 starts at y=58  (separated by a 1px line at y=57)
-_ROW_Y = [25, 58]
-
 # Maps direction → (sheet_row, sheet_col)
-
-
-
 def load_character_frames() -> dict[str, pygame.Surface]:
     """
     Loads the spritesheet and returns a dict mapping each direction
@@ -78,17 +61,17 @@ def load_character_frames() -> dict[str, pygame.Surface]:
             "down_right": <Surface>,
         }
     """
-    sheet = pygame.image.load(_SHEET_PATH).convert_alpha()
+    sheet = pygame.image.load(CHAR_SHEET).convert_alpha()
 
     frames = {}
-    for direction, (row, col) in _DIRECTION_COORDS.items():
-        x = _COL_X[col]
-        y = _ROW_Y[row]
+    for direction, (row, col) in DIRECTION_COORDS.items():
+        x = COL_X[col]
+        y = ROW_Y[row]
         rect = pygame.Rect(x, y, SPRITE_W, SPRITE_H)
         #frame = pygame.Surface((SPRITE_W, SPRITE_H), pygame.SRCALPHA) #conflict with set_colorkey below
         frame = pygame.Surface((SPRITE_W, SPRITE_H))
         frame.blit(sheet, (0, 0), rect)
-        frame.set_colorkey((32, 200, 248))   # make cyan background transparent
+        frame.set_colorkey(COLORKEY)   # make cyan background transparent
         frames[direction] = frame
 
     return frames
@@ -96,7 +79,7 @@ def load_character_frames() -> dict[str, pygame.Surface]:
 def get_direction(scale,frames, direction:str):
     if isDebug:
         print(f"direction received: '{direction}'")                                                                                                                                                                                                                                                                                 
-        print(f"valid keys: {list(_DIRECTION_COORDS.keys())}")  
+        print(f"valid keys: {list(DIRECTION_COORDS.keys())}")  
 
     scaled = pygame.transform.scale(frames[direction], (SPRITE_W * scale, SPRITE_H * scale))
     '''
@@ -199,9 +182,6 @@ def get_direction(scale,frames, direction:str):
   draw label "up" at (148, 10 + 128 + 2)
 '''
 
-def show_direction(screen:Surface, layout:list[list[str]],direction_index:int):
-    print(_DIRECTION_COORDS(direction_index))
-
 def show_character_test_screen(screen:Surface,layout:list[list[str]],frames, font, padding,scale, label_h):
     for r, row_dirs in enumerate(layout):
         for c, direction in enumerate(row_dirs):
@@ -231,7 +211,7 @@ if __name__ == "__main__":
 
     screen = pygame.display.set_mode((win_w, win_h))
     pygame.display.set_caption("Main Character – Direction Map")
-    font = pygame.font.SysFont(None, 18)
+    font = pygame.font.Font(None, 18)
 
     frames = load_character_frames()
 

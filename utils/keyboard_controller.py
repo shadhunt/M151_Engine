@@ -50,7 +50,7 @@ class KeyboardController:
 
         return current_direction, x, y
 
-
+    @staticmethod
     def read_keys() -> tuple[float, float, str | None]:
         """
         Poll WASD keys. Returns (dx, dy, direction_string_or_None).

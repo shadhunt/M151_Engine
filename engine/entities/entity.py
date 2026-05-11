@@ -1,6 +1,8 @@
 import pygame
 from config.properties import *
 from utils.keyboard_controller import KeyboardController
+
+DEBUG = False
 class Entity:
     """
     An entity exists in WORLD SPACE.
@@ -17,7 +19,8 @@ class Entity:
     SPEED = 220   # pixels per second in world space
 
     def __init__(self, world_x: float, world_y: float, frames: dict):
-        print(world_x, world_y)
+        if DEBUG:
+            print(world_x, world_y)
         self.world_x   = float(world_x)
         self.world_y   = float(world_y)
         self.direction = "up"   # facing direction, used to pick the sprite frame
@@ -27,6 +30,32 @@ class Entity:
         self.scale  = 4
         self.draw_w = SPRITE_W * self.scale   # 128 px
         self.draw_h = SPRITE_H * self.scale   # 128 px
+
+        '''
+        That's a dictionary comprehension — a concise way to build a dictionary in one expression.
+
+        The general syntax is:
+        {key_expr: value_expr for key, value in iterable}
+
+        Breaking down your example:
+        self._scaled_frames = {
+            d: pygame.transform.scale(f, (self.draw_w, self.draw_h))
+            for d, f in frames.items()
+        }
+
+        - frames.items() yields (key, value) pairs from the frames dict
+        - Each pair is unpacked into d (direction/key) and f (frame/value)
+        - For every pair, it creates a new entry: d as the key, scaled version of f as the value
+
+        It's equivalent to this loop:
+        self._scaled_frames = {}
+        for d, f in frames.items():
+            self._scaled_frames[d] = pygame.transform.scale(f, (self.draw_w, self.draw_h))
+
+        The comprehension version is just more Pythonic and compact. You'll also see the same pattern for lists ([x for x in ...]) and sets ({x for x in ...})
+        '''
+        self._scaled_frames = { d: pygame.transform.scale(f, (self.draw_w, self.draw_h)) for d, f in frames.items()}
+
 
     def update(self, dt: float, map_w: int, map_h: int) -> None:
         """
@@ -66,7 +95,6 @@ class Entity:
         before calling this method. The entity itself has no knowledge of
         the camera — it just accepts the screen position and draws there.
         """
-        sprite = self.frames[self.direction]
-        scaled = pygame.transform.scale(sprite, (self.draw_w, self.draw_h))
-        print("draw:",screen_x, screen_y)
-        screen.blit(scaled, (int(screen_x), int(screen_y)))
+        if DEBUG:
+            print("draw:",screen_x, screen_y)
+        screen.blit(self._scaled_frames[self.direction],(int(screen_x),int(screen_y)))

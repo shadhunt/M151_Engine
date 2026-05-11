@@ -8,7 +8,7 @@ DOWN       = "down"
 DOWN_RIGHT = "down_right"
 
 # Maps each direction string to its (sheet_row, sheet_col) in characters.png
-_DIRECTION_COORDS = {
+DIRECTION_COORDS = {
     UP_LEFT:    (0, 0),
     UP:         (0, 1),
     UP_RIGHT:   (0, 2),
