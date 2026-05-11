@@ -1,6 +1,11 @@
 # M151_Engine
 This is a prototype of game engine M151 Engine
 
+core: gives you the building blocks
+gameplay: defines the rules
+games: runs it.
+
+
 
 claude --resume 18031f62-180a-41b9-8c18-e463dd456e53
 

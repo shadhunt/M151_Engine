@@ -10,7 +10,7 @@ if DEBUG:
     print(f"FRAMEWORK_ROOT: {FRAMEWORK_ROOT}")
 sys.path.append(FRAMEWORK_ROOT)
 
-from gameengine.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
+from gameplay.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
 from utils.keyboard_controller import KeyboardController
 
 class Main:

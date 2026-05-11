@@ -13,9 +13,9 @@ if DEBUG:
 sys.path.append(FRAMEWORK_ROOT)
 from config.properties import *
 from config.path_config import *
-from engine.entities.entity import Entity
-from engine.camera.camera import Camera
-from gameengine.graphics.graphic_loader import GraphicLoader
+from core.entities.entity import Entity
+from core.camera.camera import Camera
+from gameplay.graphics.graphic_loader import GraphicLoader
 
 class Main:
     def __init__(self):

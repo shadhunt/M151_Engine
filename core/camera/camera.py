@@ -1,5 +1,5 @@
 import pygame
-from engine.entities.entity import Entity 
+from core.entities.entity import Entity
 class Camera:
     """
     The camera defines a rectangular window into the world.

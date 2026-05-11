@@ -5,10 +5,10 @@ import sys
 from pathlib import Path
 
 #set project path
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).resolve().parents[3]))
 
-from game.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
-import game.actions.map_actions.map_actions as map_actions
+from gameplay.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
+import gameplay.actions.map_actions.map_actions as map_actions
 from utils.keyboard_controller import KeyboardController
 from config.analog_control_const import UP, UP_LEFT, UP_RIGHT, RIGHT, LEFT, DOWN_LEFT, DOWN, DOWN_RIGHT
 
