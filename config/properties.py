@@ -19,3 +19,7 @@ COL_X    = [10 + col * 33 for col in range(4)]   # [10, 43, 76, 109]
 # Row 0 starts at y=25, row 1 starts at y=58  (separated by a 1px line at y=57)
 ROW_Y = [25, 58]
 COLORKEY = (32, 200, 248)   # cyan background → transparent
+
+MISSILE_SPEED = 450    # pixels per second for cardinal directions
+
+SCALE = 4

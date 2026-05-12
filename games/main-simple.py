@@ -13,7 +13,9 @@ if DEBUG:
 sys.path.append(FRAMEWORK_ROOT)
 from config.properties import *
 from config.path_config import *
+from config.analog_control_const import *
 from core.entities.entity import Entity
+from core.entities.missile import Missile
 from core.camera.camera import Camera
 from gameplay.graphics.graphic_loader import GraphicLoader
 
@@ -30,15 +32,19 @@ class Main:
         self.map_surface      = pygame.image.load(str(MAP_IMAGE)).convert()
         self.map_w, self.map_h     = self.map_surface.get_size()
 
-        frames           = GraphicLoader.load_frames(CHAR_SHEET)
+        self.frames           = GraphicLoader.load_player_frames(CHAR_SHEET)
+        self.missile_sheet          = pygame.image.load(CHAR_SHEET).convert_alpha()
+        self.missile_frames = GraphicLoader.load_missile_frames(self.missile_sheet, MISSILE_COORDS)
         # Spawn the player near the center of the world map
         if DEBUG:
             print("main:",self.map_w, self.map_h)
-        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=frames)
+        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
 
         self.running = True
-
+        self.aim_direction: str = UP          # which way the tank is currently facing
+        self.missiles: list[Missile] = []
+        self.missile_size = Missile.size
     def game_loop(self):
         #game loop
         while(self.running):
@@ -49,6 +55,13 @@ class Main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
+                    if event.key == pygame.K_SPACE:
+                        print("space pressed, spawn missile")
+                        # Spawn the missile at the tank's centre so it appears to
+                        # come from the middle of the sprite, not the top-left corner.
+                        mx = self.player.world_x + SPRITE_W // 2 - Missile.half_size
+                        my = self.player.world_y + SPRITE_H // 2 - Missile.half_size
+                        self.missiles.append(Missile(mx, my, self.aim_direction, self.missile_frames))
 
             # ── Update ──────────────────────────────────────────────────────────
             # 1. Move the entity in world space.
@@ -74,10 +87,19 @@ class Main:
 
             # 5. Debug overlay (drawn last so it appears on top of everything)
             #draw_debug(self.screen, self.font, self.player, self.camera)
+            # ── Update missiles ───────────────────────────────────────────────────
+            for m in self.missiles:
+                m.update(dt)
 
+            # Remove missiles that have fully left the screen.
+            # List comprehension builds a new list keeping only the ones still on screen.
+            self.missiles = [m for m in self.missiles if not m.is_offscreen(SCREEN_W, SCREEN_H)]
+
+            # Draw missiles first so they appear under the tank
+            for m in self.missiles:
+                m.draw(self.screen)
             pygame.display.flip()
 #main method
 if __name__== "__main__":
     main=Main()
     main.game_loop()
-
