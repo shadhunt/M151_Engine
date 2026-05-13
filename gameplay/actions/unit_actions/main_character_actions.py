@@ -65,8 +65,8 @@ def load_character_frames() -> dict[str, pygame.Surface]:
 
     frames = {}
     for direction, (row, col) in PLAYER_DIRECTION_COORDS.items():
-        x = COL_X[col]
-        y = ROW_Y[row]
+        x = PLAYER_COL_X[col]
+        y = PLAYER_ROW_Y[row]
         rect = pygame.Rect(x, y, SPRITE_W, SPRITE_H)
         #frame = pygame.Surface((SPRITE_W, SPRITE_H), pygame.SRCALPHA) #conflict with set_colorkey below
         frame = pygame.Surface((SPRITE_W, SPRITE_H))

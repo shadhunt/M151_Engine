@@ -1,6 +1,7 @@
 import pygame
 from config.properties import SCALE, SPRITE_W, SPRITE_H
 from config.analog_control_const import VELOCITY_MAP
+from config.path_config import CHAR_SHEET
 
 class Missile:
     """
@@ -20,8 +21,7 @@ class Missile:
     def __init__(self, x: float, y: float, direction: str, frames: dict):
         self.x = x
         self.y = y
-        sheet = pygame.image.load(SHEET_PATH).convert_alpha()
-        self.missile_frames = load_frames(sheet, MISSILE_COORDS)
+        sheet          = pygame.image.load(CHAR_SHEET).convert_alpha()
         self.vx, self.vy = VELOCITY_MAP[direction]
 
         # Pre-scale the sprite once at creation so we don't rescale every frame.

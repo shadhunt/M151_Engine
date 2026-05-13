@@ -28,13 +28,13 @@ class Main:
         step=200
         self.clock = pygame.time.Clock()
 
-        # Load assets
+        # Map assets
         self.map_surface      = pygame.image.load(str(MAP_IMAGE)).convert()
         self.map_w, self.map_h     = self.map_surface.get_size()
-
-        self.frames           = GraphicLoader.load_player_frames(CHAR_SHEET)
-        self.missile_sheet          = pygame.image.load(CHAR_SHEET).convert_alpha()
-        self.missile_frames = GraphicLoader.load_missile_frames(self.missile_sheet, MISSILE_COORDS)
+        graphic_loader = GraphicLoader()
+        # Entity assets
+        self.frames           = graphic_loader.load_player_frames(CHAR_SHEET)
+        self.missile_frames = graphic_loader.load_player_frames( MISSILE_COORDS)
         # Spawn the player near the center of the world map
         if DEBUG:
             print("main:",self.map_w, self.map_h)
