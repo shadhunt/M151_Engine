@@ -31,10 +31,10 @@ class Main:
         # Map assets
         self.map_surface      = pygame.image.load(str(MAP_IMAGE)).convert()
         self.map_w, self.map_h     = self.map_surface.get_size()
-        graphic_loader = GraphicLoader()
+        graphic_loader = GraphicLoader(CHAR_SHEET)
         # Entity assets
-        self.frames           = graphic_loader.load_player_frames(CHAR_SHEET)
-        self.missile_frames = graphic_loader.load_player_frames( MISSILE_COORDS)
+        self.frames           = graphic_loader.load_player_frames()
+        self.missile_frames   = graphic_loader.load_missile_frames()
         # Spawn the player near the center of the world map
         if DEBUG:
             print("main:",self.map_w, self.map_h)
@@ -59,9 +59,9 @@ class Main:
                         print("space pressed, spawn missile")
                         # Spawn the missile at the tank's centre so it appears to
                         # come from the middle of the sprite, not the top-left corner.
-                        mx = self.player.world_x + SPRITE_W // 2 - Missile.half_size
-                        my = self.player.world_y + SPRITE_H // 2 - Missile.half_size
-                        self.missiles.append(Missile(mx, my, self.aim_direction, self.missile_frames))
+                        mx = self.player.world_x + self.player.draw_w / 2 - Missile.half_size
+                        my = self.player.world_y + self.player.draw_h / 2 - Missile.half_size
+                        self.missiles.append(Missile(mx, my, self.player.direction, self.missile_frames))
 
             # ── Update ──────────────────────────────────────────────────────────
             # 1. Move the entity in world space.
@@ -93,11 +93,15 @@ class Main:
 
             # Remove missiles that have fully left the screen.
             # List comprehension builds a new list keeping only the ones still on screen.
-            self.missiles = [m for m in self.missiles if not m.is_offscreen(SCREEN_W, SCREEN_H)]
+            self.missiles = [
+                m for m in self.missiles
+                if not m.is_outside_view(self.camera.x, self.camera.y, SCREEN_W, SCREEN_H)
+            ]
 
-            # Draw missiles first so they appear under the tank
+            # Draw missiles in screen space after converting from world space.
             for m in self.missiles:
-                m.draw(self.screen)
+                missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
+                m.draw(self.screen, missile_screen_x, missile_screen_y)
             pygame.display.flip()
 #main method
 if __name__== "__main__":

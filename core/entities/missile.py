@@ -1,7 +1,6 @@
 import pygame
-from config.properties import SCALE, SPRITE_W, SPRITE_H
+from config.properties import COLORKEY, SCALE, SPRITE_W, SPRITE_H
 from config.analog_control_const import VELOCITY_MAP
-from config.path_config import CHAR_SHEET
 
 class Missile:
     """
@@ -21,12 +20,12 @@ class Missile:
     def __init__(self, x: float, y: float, direction: str, frames: dict):
         self.x = x
         self.y = y
-        sheet          = pygame.image.load(CHAR_SHEET).convert_alpha()
         self.vx, self.vy = VELOCITY_MAP[direction]
 
         # Pre-scale the sprite once at creation so we don't rescale every frame.
         raw = frames[direction]
         self.image = pygame.transform.scale(raw, (SPRITE_W * SCALE, SPRITE_H * SCALE))
+        self.image.set_colorkey(COLORKEY)
         self.size  = SPRITE_W * SCALE   # we'll use this for off-screen detection
 
     def update(self, dt: float):
@@ -34,10 +33,10 @@ class Missile:
         self.x += self.vx * dt
         self.y += self.vy * dt
 
-    def is_offscreen(self, screen_w: int, screen_h: int) -> bool:
-        """True once the entire sprite has left the visible area."""
-        return (self.x + self.size < 0 or self.x > screen_w or
-                self.y + self.size < 0 or self.y > screen_h)
+    def is_outside_view(self, view_x: float, view_y: float, view_w: int, view_h: int) -> bool:
+        """True once the entire sprite has left the current camera view."""
+        return (self.x + self.size < view_x or self.x > view_x + view_w or
+                self.y + self.size < view_y or self.y > view_y + view_h)
 
-    def draw(self, screen: pygame.Surface):
-        screen.blit(self.image, (int(self.x), int(self.y)))
+    def draw(self, screen: pygame.Surface, screen_x: float, screen_y: float):
+        screen.blit(self.image, (int(screen_x), int(screen_y)))
