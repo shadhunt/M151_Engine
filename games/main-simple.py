@@ -33,12 +33,12 @@ class Main:
         self.map_w, self.map_h     = self.map_surface.get_size()
         graphic_loader = GraphicLoader(CHAR_SHEET)
         # Entity assets
-        self.frames           = graphic_loader.load_player_frames()
-        self.missile_frames   = graphic_loader.load_missile_frames()
+        self.player_frames           = graphic_loader.load_frames(PLAYER_DIRECTION_COORDS)
+        self.missile_frames   = graphic_loader.load_frames(MISSILE_COORDS)
         # Spawn the player near the center of the world map
         if DEBUG:
             print("main:",self.map_w, self.map_h)
-        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.frames)
+        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.player_frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
 
         self.running = True

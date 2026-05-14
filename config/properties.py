@@ -50,6 +50,9 @@ def char_sheet_grid_formular(col_starting, row_starting, col_count=4, row_count=
    return [column_starting_x + col * (sprite_width + sprite_separator) for col in range(col_starting, col_starting + col_count)], [column_starting_y + row * (sprite_height + sprite_separator) for row in range(row_starting, row_starting + row_count)]
 
 def char_sheet_cell_position(col, row):
+   """
+   #input the column and row of the cell, and it will return the x and y coordinates of the cell (top-left corner)
+   """
    return column_starting_x + col * (sprite_width + sprite_separator), column_starting_y + row * (sprite_height + sprite_separator)
 
 # Row content y-starts for the green car (rows 0 and 1 of the sheet)
