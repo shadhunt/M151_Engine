@@ -62,7 +62,6 @@ class Main:
                         mx = self.player.world_x + self.player.draw_w / 2 - Missile.half_size
                         my = self.player.world_y + self.player.draw_h / 2 - Missile.half_size
                         self.missiles.append(Missile(mx, my, self.player.direction, self.missile_frames))
-
             # ── Update ──────────────────────────────────────────────────────────
             # 1. Move the entity in world space.
 
@@ -107,3 +106,4 @@ class Main:
 if __name__== "__main__":
     main=Main()
     main.game_loop()
+
