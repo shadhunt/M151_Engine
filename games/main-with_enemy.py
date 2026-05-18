@@ -110,6 +110,7 @@ class Main:
             for m in self.missiles:
                 missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
                 m.draw(self.screen, missile_screen_x, missile_screen_y)
+                m.get_hitbox(self.screen, missile_screen_x, missile_screen_y)
             pygame.display.flip()
 #main method
 if __name__== "__main__":

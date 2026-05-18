@@ -35,8 +35,15 @@ class Missile:
 
     def is_outside_view(self, view_x: float, view_y: float, view_w: int, view_h: int) -> bool:
         """True once the entire sprite has left the current camera view."""
-        return (self.x + self.size < view_x or self.x > view_x + view_w or
-                self.y + self.size < view_y or self.y > view_y + view_h)
+        return (self.x + Missile.size < view_x or self.x > view_x + view_w or
+                self.y + Missile.size < view_y or self.y > view_y + view_h)
 
     def draw(self, screen: pygame.Surface, screen_x: float, screen_y: float):
         screen.blit(self.image, (int(screen_x), int(screen_y)))
+    
+    def get_hitbox(self, screen: pygame.Surface, screen_x: float, screen_y: float) -> pygame.Rect:
+        hitbox = pygame.Rect(self.x + Missile.half_size - 5, self.y + Missile.half_size - 5, 10, 10)
+        debug_rect = pygame.Rect(int(screen_x) + Missile.half_size - 5, int(screen_y) + Missile.half_size - 5, 10, 10)
+        pygame.draw.rect(screen, (255, 0, 255), debug_rect, 2)
+        return hitbox
+
