@@ -70,3 +70,5 @@ MISSILE_SPEED = 1100    # pixels per second for cardinal directions
 
 SCALE = 4
 
+ENEMY_SCALE = 3
+ENEMY_SPEED = 180

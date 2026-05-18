@@ -37,6 +37,29 @@ MISSILE_COORDS = {
     DOWN_RIGHT: (19, 7),
 }
 
+
+ENEMY_DIRECTION_COORDS = {
+    UP_LEFT: (6, 0),
+    UP: (6, 1),
+    UP_RIGHT: (6, 2),
+    RIGHT: (6, 3),
+    LEFT: (7, 0),
+    DOWN_LEFT: (7, 1),
+    DOWN: (7, 2),
+    DOWN_RIGHT: (7, 3),
+}
+
+ENEMY_PATH = [
+    RIGHT,
+    DOWN_RIGHT,
+    DOWN,
+    DOWN_LEFT,
+    LEFT,
+    UP_LEFT,
+    UP,
+    UP_RIGHT,
+]
+
 # velocity (vx, vy) in pixels-per-second for each direction
 VELOCITY_MAP = {
     UP:         ( 0,  -_S),
