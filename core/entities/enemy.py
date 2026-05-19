@@ -3,6 +3,8 @@ from config.analog_control_const import *
 from config.properties import *
 
 class Enemy:
+
+
     def __init__(self, world_x: float, world_y: float, frames: dict[str, pygame.Surface]):
         self.world_x = float(world_x)
         self.world_y = float(world_y)
@@ -71,3 +73,6 @@ class Enemy:
 
     def draw(self, surface: pygame.Surface, screen_x: float, screen_y: float) -> None:
         surface.blit(self.image, (int(screen_x), int(screen_y)))
+
+    def get_hitbox(self, screen_x: float, screen_y: float) -> pygame.Rect:
+        return pygame.Rect(self.world_x, self.world_y, self.draw_w, self.draw_h)

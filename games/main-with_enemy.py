@@ -98,7 +98,7 @@ class Main:
             # ── Update missiles ───────────────────────────────────────────────────
             for m in self.missiles:
                 m.update(dt)
-
+            enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
             # Remove missiles that have fully left the screen.
             # List comprehension builds a new list keeping only the ones still on screen.
             self.missiles = [
@@ -111,6 +111,10 @@ class Main:
                 missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
                 m.draw(self.screen, missile_screen_x, missile_screen_y)
                 m.get_hitbox(self.screen, missile_screen_x, missile_screen_y)
+                
+                index = m.get_hitbox(self.screen, enemy_screen_x, enemy_screen_y).collidelist(enemy_list)
+                if(index != -1):
+                    print("Enemy hit!")
             pygame.display.flip()
 #main method
 if __name__== "__main__":
