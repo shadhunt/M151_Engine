@@ -2,7 +2,7 @@ import pygame
 from config.properties import *
 from utils.keyboard_controller import KeyboardController
 
-DEBUG = False
+DEBUG = True
 class Entity:
     """
     An entity exists in WORLD SPACE.
@@ -98,3 +98,7 @@ class Entity:
         if DEBUG:
             print("draw:",screen_x, screen_y)
         screen.blit(self._scaled_frames[self.direction],(int(screen_x),int(screen_y)))
+
+    def __del__(self):
+        if DEBUG:
+            print("Entity destroyed!!")

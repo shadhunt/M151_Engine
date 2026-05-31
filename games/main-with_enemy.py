@@ -72,7 +72,7 @@ class Main:
             # 1. Move the entity in world space.
 
             self.player.update(dt, self.map_w, self.map_h)
-            self.enemy.update(dt, self.map_w, self.map_h)
+
 
             # 2. Update the camera AFTER the entity moves.
             #    This ensures the camera tracks the entity's NEW position.
@@ -91,14 +91,17 @@ class Main:
             screen_x, screen_y = self.camera.world_to_screen(self.player.world_x, self.player.world_y)
             self.player.draw(self.screen, screen_x, screen_y)
 
-            enemy_screen_x, enemy_screen_y = self.camera.world_to_screen(self.enemy.world_x, self.enemy.world_y)
-            self.enemy.draw(self.screen, enemy_screen_x, enemy_screen_y)
+            if self.enemy is not None:
+                self.enemy.update(dt, self.map_w, self.map_h)
+                enemy_screen_x, enemy_screen_y = self.camera.world_to_screen(self.enemy.world_x, self.enemy.world_y)
+                self.enemy.draw(self.screen, enemy_screen_x, enemy_screen_y)
+                enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
             # 5. Debug overlay (drawn last so it appears on top of everything)
             #draw_debug(self.screen, self.font, self.player, self.camera)
             # ── Update missiles ───────────────────────────────────────────────────
             for m in self.missiles:
                 m.update(dt)
-            enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
+
             # Remove missiles that have fully left the screen.
             # List comprehension builds a new list keeping only the ones still on screen.
             self.missiles = [
@@ -114,6 +117,7 @@ class Main:
                 
                 index = m.get_hitbox(self.screen, enemy_screen_x, enemy_screen_y).collidelist(enemy_list)
                 if(index != -1):
+                    self.enemy = None
                     print("Enemy hit!")
             pygame.display.flip()
 #main method
