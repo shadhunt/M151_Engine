@@ -1,0 +1,49 @@
+import pygame
+from config.properties import COLORKEY, SCALE, SPRITE_W, SPRITE_H
+from config.analog_control_const import VELOCITY_MAP
+
+class Missile:
+    """
+    One missile travelling across the screen.
+
+    Position is stored as floats so sub-pixel movement stays accurate
+    even at high speed.  We only round to int when drawing.
+
+    Lifecycle:
+      1. Created at the tank's centre when SPACE is pressed.
+      2. Updated every frame: position += velocity * dt.
+      3. Removed from the list once it fully exits the window.
+    """
+    size = SPRITE_W * SCALE
+    half_size = size // 2
+
+    def __init__(self, x: float, y: float, direction: str, frames: dict):
+        self.x = x
+        self.y = y
+        self.vx, self.vy = VELOCITY_MAP[direction]
+
+        # Pre-scale the sprite once at creation so we don't rescale every frame.
+        raw = frames[direction]
+        self.image = pygame.transform.scale(raw, (SPRITE_W * SCALE, SPRITE_H * SCALE))
+        self.image.set_colorkey(COLORKEY)
+        self.size  = SPRITE_W * SCALE   # we'll use this for off-screen detection
+
+    def update(self, dt: float):
+        """Move by velocity × elapsed seconds (frame-rate-independent)."""
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+    def is_outside_view(self, view_x: float, view_y: float, view_w: int, view_h: int) -> bool:
+        """True once the entire sprite has left the current camera view."""
+        return (self.x + Missile.size < view_x or self.x > view_x + view_w or
+                self.y + Missile.size < view_y or self.y > view_y + view_h)
+
+    def draw(self, screen: pygame.Surface, screen_x: float, screen_y: float):
+        screen.blit(self.image, (int(screen_x), int(screen_y)))
+    
+    def get_hitbox(self, screen: pygame.Surface, screen_x: float, screen_y: float) -> pygame.Rect:
+        hitbox = pygame.Rect(self.x + Missile.half_size - 5, self.y + Missile.half_size - 5, 10, 10)
+        debug_rect = pygame.Rect(int(screen_x) + Missile.half_size - 5, int(screen_y) + Missile.half_size - 5, 10, 10)
+        pygame.draw.rect(screen, (255, 0, 255), debug_rect, 2)
+        return hitbox
+

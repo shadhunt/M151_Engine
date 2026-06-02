@@ -64,9 +64,9 @@ def load_character_frames() -> dict[str, pygame.Surface]:
     sheet = pygame.image.load(CHAR_SHEET).convert_alpha()
 
     frames = {}
-    for direction, (row, col) in DIRECTION_COORDS.items():
-        x = COL_X[col]
-        y = ROW_Y[row]
+    for direction, (row, col) in PLAYER_DIRECTION_COORDS.items():
+        x = PLAYER_COL_X[col]
+        y = PLAYER_ROW_Y[row]
         rect = pygame.Rect(x, y, SPRITE_W, SPRITE_H)
         #frame = pygame.Surface((SPRITE_W, SPRITE_H), pygame.SRCALPHA) #conflict with set_colorkey below
         frame = pygame.Surface((SPRITE_W, SPRITE_H))
@@ -79,7 +79,7 @@ def load_character_frames() -> dict[str, pygame.Surface]:
 def get_direction(scale,frames, direction:str):
     if isDebug:
         print(f"direction received: '{direction}'")                                                                                                                                                                                                                                                                                 
-        print(f"valid keys: {list(DIRECTION_COORDS.keys())}")  
+        print(f"valid keys: {list(PLAYER_DIRECTION_COORDS.keys())}")  
 
     scaled = pygame.transform.scale(frames[direction], (SPRITE_W * scale, SPRITE_H * scale))
     '''
@@ -246,4 +246,3 @@ if __name__ == "__main__":
                 running = False
 
     pygame.quit()
-

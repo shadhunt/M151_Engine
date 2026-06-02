@@ -16,6 +16,7 @@ from config.path_config import *
 from config.analog_control_const import *
 from core.entities.entity import Entity
 from core.entities.missile import Missile
+from core.entities.enemy import Enemy
 from core.camera.camera import Camera
 from gameplay.graphics.graphic_loader import GraphicLoader
 
@@ -40,7 +41,11 @@ class Main:
             print("main:",self.map_w, self.map_h)
         self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.player_frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
-
+        self.enemy = Enemy(
+            world_x=self.map_w / 2 + 260,
+            world_y=self.map_h / 2,
+            frames=graphic_loader.load_frames(ENEMY_DIRECTION_COORDS),
+        )
         self.running = True
         self.aim_direction: str = UP          # which way the tank is currently facing
         self.missiles: list[Missile] = []
@@ -62,10 +67,12 @@ class Main:
                         mx = self.player.world_x + self.player.draw_w / 2 - Missile.half_size
                         my = self.player.world_y + self.player.draw_h / 2 - Missile.half_size
                         self.missiles.append(Missile(mx, my, self.player.direction, self.missile_frames))
+
             # ── Update ──────────────────────────────────────────────────────────
             # 1. Move the entity in world space.
 
             self.player.update(dt, self.map_w, self.map_h)
+
 
             # 2. Update the camera AFTER the entity moves.
             #    This ensures the camera tracks the entity's NEW position.
@@ -84,6 +91,11 @@ class Main:
             screen_x, screen_y = self.camera.world_to_screen(self.player.world_x, self.player.world_y)
             self.player.draw(self.screen, screen_x, screen_y)
 
+            if self.enemy is not None:
+                self.enemy.update(dt, self.map_w, self.map_h)
+                enemy_screen_x, enemy_screen_y = self.camera.world_to_screen(self.enemy.world_x, self.enemy.world_y)
+                self.enemy.draw(self.screen, enemy_screen_x, enemy_screen_y)
+                enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
             # 5. Debug overlay (drawn last so it appears on top of everything)
             #draw_debug(self.screen, self.font, self.player, self.camera)
             # ── Update missiles ───────────────────────────────────────────────────
@@ -101,9 +113,14 @@ class Main:
             for m in self.missiles:
                 missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
                 m.draw(self.screen, missile_screen_x, missile_screen_y)
+                m.get_hitbox(self.screen, missile_screen_x, missile_screen_y)
+                
+                index = m.get_hitbox(self.screen, enemy_screen_x, enemy_screen_y).collidelist(enemy_list)
+                if(index != -1):
+                    self.enemy = None
+                    print("Enemy hit!")
             pygame.display.flip()
 #main method
 if __name__== "__main__":
     main=Main()
     main.game_loop()
-
