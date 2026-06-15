@@ -70,7 +70,7 @@ class ConfigEnemy:
         # Start at index 0 of ENEMY_PATH and rotate forward each tick.
         self._patrol_index  = 0
         self._patrol_timer  = 0.0
-        self._patrol_every  = 0.85          # seconds between direction changes
+        self._patrol_every  = 1.85          # seconds between direction changes
 
         self.direction = ENEMY_PATH[self._patrol_index]
         self.image     = self._scaled_frames[self.direction]
@@ -274,7 +274,7 @@ class Main:
         player_frames        = graphic_loader.load_frames(PLAYER_DIRECTION_COORDS)
         self.missile_frames  = graphic_loader.load_frames(MISSILE_COORDS)
 
-        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=player_frames)
+        self.player = Entity(1, world_x=self.map_w / 2, world_y=self.map_h / 2, frames=player_frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
 
         json_path     = Path(__file__).parent / "enemies.json"

@@ -1,6 +1,5 @@
 import pygame
 import sys
-from config.path_config import MAP_PATH
 '''
   ┌──────────────┬──────────────────────────────────────────────────────────┐                                                                                                                                                                                                                                                 
   │    Thing     │                          Detail                          │                                                                                                                                                                                                                                               

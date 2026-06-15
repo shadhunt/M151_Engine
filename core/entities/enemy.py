@@ -1,16 +1,27 @@
 import pygame
+from core.entities.entity import Entity
 from config.analog_control_const import *
 from config.properties import *
+from utils.characters_utils.enum_movement import MovementPatternName
 
-class Enemy:
+class Enemy(Entity):
 
 
-    def __init__(self, world_x: float, world_y: float, frames: dict[str, pygame.Surface]):
-        self.world_x = float(world_x)
-        self.world_y = float(world_y)
+    def __init__(self, id, world_x: float, world_y: float, frames: dict[str, pygame.Surface]):
+
+        # TODO: add: attack frequency,
+        '''
+        super().id = id
+        super().world_x = float(world_x)
+        super().world_y = float(world_y)
+        '''
+
+        super().__init__(id, world_x, world_y, frames)
+
         self.frames = frames
         self.direction_index = 0
         self.direction = ENEMY_PATH[self.direction_index]
+        self.movement_pattern = MovementPatternName.PATROL
         self.scale = ENEMY_SCALE
         self.draw_w = SPRITE_W * self.scale
         self.draw_h = SPRITE_H * self.scale

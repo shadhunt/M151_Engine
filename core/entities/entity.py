@@ -15,12 +15,16 @@ class Entity:
     makes the camera system work. The entity never needs to know about
     the camera, and the camera never needs to know about gameplay logic.
     """
-
+    id: int
+    world_x: float
+    world_y: float
+    direction: str
     SPEED = 220   # pixels per second in world space
 
-    def __init__(self, world_x: float, world_y: float, frames: dict):
+    def __init__( self, id, world_x: float, world_y: float, frames: dict):
         if DEBUG:
             print(world_x, world_y)
+        self.id = id
         self.world_x   = float(world_x)
         self.world_y   = float(world_y)
         self.direction = "up"   # facing direction, used to pick the sprite frame
@@ -101,4 +105,4 @@ class Entity:
 
     def __del__(self):
         if DEBUG:
-            print("Entity destroyed!!")
+            print("Entity %d destroyed!!", self.id)
