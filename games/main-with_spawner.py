@@ -39,7 +39,7 @@ class Main:
         # Spawn the player near the center of the world map
         if DEBUG:
             print("main:",self.map_w, self.map_h)
-        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.player_frames)
+        self.player = Entity(0,world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.player_frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
         self.enemy = Enemy(1,
             world_x=self.map_w / 2 + 260,
