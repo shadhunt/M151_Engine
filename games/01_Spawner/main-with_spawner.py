@@ -6,7 +6,7 @@ from pathlib import Path
 This is a example of using the whole framework to create a simple game with a player that can move around a map.
 '''
 
-FRAMEWORK_ROOT = str( Path(__file__).resolve().parents[1])    # set parents level to 2 if want to run in template folder directly, otherwise, set to 1
+FRAMEWORK_ROOT = str( Path(__file__).resolve().parents[2])    # set parents level to 2 if want to run in template folder directly, otherwise, set to 1
 DEBUG = True
 if DEBUG:
     print(f"FRAMEWORK_ROOT: {FRAMEWORK_ROOT}")
