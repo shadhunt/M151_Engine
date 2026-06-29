@@ -51,11 +51,12 @@ class ConfigEnemy:
         whichever axis it hits a wall on.
     """
 
-    def __init__(self, world_x, world_y, frames, trail="patrol", speed=ENEMY_SPEED):
+    def __init__(self, world_x, world_y, frames, trail="patrol", speed=ENEMY_SPEED, id="unknown"):
         self.world_x  = float(world_x)
         self.world_y  = float(world_y)
         self.trail    = trail
         self.speed    = speed
+        self.id       = id
 
         self.scale  = ENEMY_SCALE
         self.draw_w = SPRITE_W * self.scale
@@ -249,8 +250,8 @@ class EnemySpawner:
                 frames  = frames,
                 trail   = cfg.get("trail", "patrol"),
                 speed   = cfg.get("speed", ENEMY_SPEED),
-            )
-            enemy.id = cfg.get("id", "unknown")
+                id      = cfg.get("id", "unknown")
+                )
             enemies.append(enemy)
 
         print(f"Spawned {len(enemies)} enemies from {self._json_path.name}")

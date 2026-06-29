@@ -91,13 +91,6 @@ class Main:
             screen_x, screen_y = self.camera.world_to_screen(self.player.world_x, self.player.world_y)
             self.player.draw(self.screen, screen_x, screen_y)
 
-            if self.enemy is not None:
-                self.enemy.update(dt, self.map_w, self.map_h)
-                enemy_screen_x, enemy_screen_y = self.camera.world_to_screen(self.enemy.world_x, self.enemy.world_y)
-                self.enemy.draw(self.screen, enemy_screen_x, enemy_screen_y)
-                enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
-            # 5. Debug overlay (drawn last so it appears on top of everything)
-            #draw_debug(self.screen, self.font, self.player, self.camera)
             # ── Update missiles ───────────────────────────────────────────────────
             for m in self.missiles:
                 m.update(dt)
@@ -114,11 +107,21 @@ class Main:
                 missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
                 m.draw(self.screen, missile_screen_x, missile_screen_y)
                 m.get_hitbox(self.screen, missile_screen_x, missile_screen_y)
-                
-                index = m.get_hitbox(self.screen, enemy_screen_x, enemy_screen_y).collidelist(enemy_list)
-                if(index != -1):
-                    self.enemy = None
-                    print("Enemy hit!")
+
+            if self.enemy is not None:
+                self.enemy.update(dt, self.map_w, self.map_h)
+                enemy_screen_x, enemy_screen_y = self.camera.world_to_screen(self.enemy.world_x, self.enemy.world_y)
+                self.enemy.draw(self.screen, enemy_screen_x, enemy_screen_y)
+                enemy_list = [self.enemy.get_hitbox(enemy_screen_x, enemy_screen_y)]
+                # Collision detection lives here — enemy_screen_x and enemy_list are guaranteed in scope
+                for m in self.missiles:
+                    missile_screen_x, missile_screen_y = self.camera.world_to_screen(m.x, m.y)
+                    if m.get_hitbox(self.screen, missile_screen_x, missile_screen_y).collidelist(enemy_list) != -1:
+                        self.enemy = None
+                        print("Enemy hit!")
+                        break
+            # 5. Debug overlay (drawn last so it appears on top of everything)
+            #draw_debug(self.screen, self.font, self.player, self.camera)
             pygame.display.flip()
 #main method
 if __name__== "__main__":
