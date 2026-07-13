@@ -1,0 +1,770 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>M151 Simple Engine — Guide</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+
+  :root{
+    --ink:#1c2530;
+    --heading:#123a63;
+    --accent:#2563eb;
+    --note-bg:#eef5ff;   --note-border:#2563eb;
+    --why-bg:#fff7ed;    --why-border:#c2660c;
+    --try-bg:#eefaf3;    --try-border:#0f8a5f;
+    --code-bg:#f4f5f7;
+    --rule:#d7dde5;
+  }
+
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"DejaVu Serif","Noto Serif",serif;
+    font-size:11.3pt;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  h1,h2,h3,h4{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    color:var(--heading);
+    line-height:1.25;
+  }
+  h1{ font-size:23pt; margin:0 0 6mm 0; }
+  h2{ font-size:16pt; border-bottom:2px solid var(--rule); padding-bottom:2mm; margin:0 0 5mm 0; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:7mm 0 2mm 0; }
+  h4{ font-size:11pt; margin:5mm 0 1mm 0; color:var(--accent); }
+
+  p{ margin:0 0 3mm 0; }
+  ul, ol{ margin:0 0 4mm 0; padding-left:5mm; }
+  li{ margin-bottom:1.4mm; }
+
+  code{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    padding:0.5px 4px;
+    border-radius:3px;
+    font-size:9.6pt;
+  }
+  pre{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+    border-radius:3px;
+    padding:3mm 4mm;
+    font-size:9.3pt;
+    line-height:1.45;
+    white-space:pre-wrap;
+    margin:0 0 4mm 0;
+  }
+  pre code{ background:none; padding:0; border-radius:0; }
+
+  .callout{
+    border-left:4px solid var(--note-border);
+    background:var(--note-bg);
+    padding:3mm 4mm;
+    margin:0 0 4mm 0;
+    border-radius:0 4px 4px 0;
+  }
+  .callout .tag{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    font-weight:bold;
+    font-size:8.6pt;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:1.2mm;
+    color:var(--note-border);
+  }
+  .callout.why{ background:var(--why-bg); border-left-color:var(--why-border); }
+  .callout.why .tag{ color:var(--why-border); }
+  .callout.try{ background:var(--try-bg); border-left-color:var(--try-border); }
+  .callout.try .tag{ color:var(--try-border); }
+
+  table{ border-collapse:collapse; width:100%; margin:0 0 4mm 0; font-size:10pt; }
+  th,td{ border:1px solid var(--rule); padding:1.8mm 2.6mm; text-align:left; vertical-align:top; }
+  th{ font-family:"DejaVu Sans",sans-serif; background:#f1f4f8; color:var(--heading); }
+
+  .chapter{ page-break-before:always; }
+  .titlepage{ page-break-after:always; }
+  .no-break{ page-break-inside:avoid; }
+
+  /* -- title page -- */
+  .titlepage{
+    height:250mm;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    border-top:6px solid var(--accent);
+    padding-top:20mm;
+  }
+  .titlepage .kicker{
+    font-family:"DejaVu Sans",sans-serif;
+    color:var(--accent);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:10.5pt;
+    margin-bottom:6mm;
+  }
+  .titlepage h1{ font-size:34pt; margin-bottom:4mm; }
+  .titlepage .subtitle{
+    font-family:"DejaVu Sans",sans-serif;
+    font-size:14pt;
+    color:#3b4657;
+    max-width:130mm;
+    margin-bottom:14mm;
+  }
+  .titlepage .meta{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:9.5pt;
+    color:#5b6577;
+    border-top:1px solid var(--rule);
+    padding-top:4mm;
+    max-width:130mm;
+  }
+
+  /* -- toc -- */
+  .toc-list{ list-style:none; padding:0; }
+  .toc-list li{
+    font-family:"DejaVu Sans",sans-serif;
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px dotted var(--rule);
+    padding:2mm 0;
+    margin:0;
+  }
+  .toc-list .num{ color:var(--accent); font-weight:bold; margin-right:3mm; }
+
+  /* -- folder tree -- */
+  .tree{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:8.6pt;
+    white-space:pre;
+    background:var(--code-bg);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:3mm 4mm;
+    line-height:1.5;
+  }
+
+  /* -- coordinate-space diagram -- */
+  .diagram{ margin:9mm 0 6mm 0; }
+  .diagram .world{
+    position:relative;
+    width:150px; height:420px;
+    background:#eef1f5;
+    border:2px solid #8492a6;
+    margin:0 auto;
+  }
+  .diagram .world .world-label{
+    position:absolute; top:-9mm; left:50%; transform:translateX(-50%);
+    white-space:nowrap;
+    font-family:"DejaVu Sans",sans-serif; font-size:8pt; color:#5b6577;
+  }
+  .diagram .camera{
+    position:absolute; top:90px; left:22px;
+    width:104px; height:58px;
+    background:#ffffff;
+    border:2px solid var(--accent);
+  }
+  .diagram .camera .camera-label{
+    position:absolute; top:-8mm; left:50%; transform:translateX(-50%);
+    white-space:nowrap;
+    font-family:"DejaVu Sans",sans-serif; font-size:7.6pt; color:var(--accent); font-weight:bold;
+  }
+  .diagram .player{
+    position:absolute; top:22px; left:22px;
+    width:14px; height:14px; border-radius:50%;
+    background:#c2660c; border:2px solid #fff; box-shadow:0 0 0 1px #c2660c;
+  }
+  .diagram .player-label{
+    position:absolute; top:20px; left:42px;
+    white-space:nowrap;
+    font-family:"DejaVu Sans",sans-serif; font-size:7.6pt; color:#c2660c; font-weight:bold;
+  }
+
+  .figure-caption{
+    text-align:center; font-family:"DejaVu Sans",sans-serif;
+    font-size:8.6pt; color:#5b6577; margin-top:2mm;
+  }
+
+  .step-list{ counter-reset:step; list-style:none; padding-left:0; }
+  .step-list li{
+    counter-increment:step;
+    position:relative;
+    padding-left:8mm;
+    margin-bottom:2.4mm;
+  }
+  .step-list li::before{
+    content: counter(step);
+    position:absolute; left:0; top:0;
+    width:5.5mm; height:5.5mm; border-radius:50%;
+    background:var(--accent); color:#fff;
+    font-family:"DejaVu Sans",sans-serif; font-size:8pt; font-weight:bold;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .footerline{
+    margin-top:10mm; padding-top:2mm; border-top:1px solid var(--rule);
+    font-family:"DejaVu Sans",sans-serif; font-size:8.5pt; color:#8592a5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ TITLE PAGE ══════════════════════ -->
+<div class="titlepage">
+  <div class="kicker">M151 Engine — examples/simple_engine</div>
+  <h1>The Simple Engine Guide</h1>
+  <div class="subtitle">
+    A guided tour of a small, complete reference game engine — what each
+    system does, why it's shaped the way it is, and what to build next.
+  </div>
+  <div class="meta">
+    Companion to: examples/simple_engine/<br>
+    Run it with: <code>python main.py</code><br>
+    Controls: WASD move · SPACE shoot · F1 hitboxes · ESC quit
+  </div>
+</div>
+
+<!-- ══════════════════════ TABLE OF CONTENTS ══════════════════════ -->
+<div class="chapter">
+<h2>Table of Contents</h2>
+<ul class="toc-list">
+  <li><span><span class="num">1</span>Why This Folder Exists</span><span>Prototype vs. engine</span></li>
+  <li><span><span class="num">2</span>Folder Structure, Piece by Piece</span><span>What lives where, and why</span></li>
+  <li><span><span class="num">3</span>The Camera &amp; Coordinate Spaces</span><span>World, camera, screen</span></li>
+  <li><span><span class="num">4</span>Input &amp; Direction Normalization</span><span>Why diagonals ×0.707</span></li>
+  <li><span><span class="num">5</span>Entity, EntityManager, Scene, Game</span><span>The architecture that was missing</span></li>
+  <li><span><span class="num">6</span>Animation &amp; Collision</span><span>Two small, honest systems</span></li>
+  <li><span><span class="num">7</span>Data-Driven Spawning</span><span>enemies.json and the factory pattern</span></li>
+  <li><span><span class="num">8</span>Exercises</span><span>Six concrete ways to extend the demo</span></li>
+  <li><span><span class="num">9</span>Where To Go Next</span><span>What a "full" engine still has that this doesn't</span></li>
+</ul>
+</div>
+
+<!-- ══════════════════════ CHAPTER 1 ══════════════════════ -->
+<div class="chapter">
+<h2>1 · Why This Folder Exists</h2>
+
+<p>
+Before this folder existed, M151_Engine had several working prototypes —
+<code>examples/entity_camera_relationship/main.py</code>,
+<code>games/main-with_enemy.py</code>,
+<code>games/01_Spawner/main-with_spawner.py</code> — each one teaching a
+real concept (camera math, sprite animation, JSON-driven spawning) but
+each one also <em>re-implementing its own game loop from scratch</em>.
+Every prototype had its own <code>pygame.init()</code>, its own
+hand-rolled list of enemies, its own copy-pasted collision check glued
+into the bottom of the update loop.
+</p>
+
+<p>
+That repetition is the difference between a collection of prototypes and
+an <strong>engine</strong>. An engine is the part you don't rewrite every
+time you start a new game — a small set of systems that don't know or
+care what game you're building, plus a place for game-specific code to
+plug into them.
+</p>
+
+<div class="callout">
+<span class="tag">The one rule</span>
+<code>engine/</code> never imports from <code>entities/</code> or
+<code>scenes/</code>. Every system in <code>engine/</code> only ever
+touches generic <code>Entity</code> objects — position, size,
+<code>update()</code>, <code>draw()</code>, <code>get_hitbox()</code>.
+It has no idea a "Player" or "Enemy" exists. That's what lets
+<code>EntityManager</code> and the collision system work unchanged no
+matter what you build in <code>entities/</code> next.
+</div>
+
+<p>
+This demo is deliberately small — one map, one player, four enemies,
+one weapon. The point isn't the game; it's that every system in it
+(camera, animation, collision, spawning, scenes) is written the way
+you'd want it if the game were ten times bigger, so you have a solid
+floor to build on for the next few weeks instead of a fourth throwaway
+prototype.
+</p>
+</div>
+
+<!-- ══════════════════════ CHAPTER 2 ══════════════════════ -->
+<div class="chapter">
+<h2>2 · Folder Structure, Piece by Piece</h2>
+
+<div class="tree">simple_engine/
+├── main.py                entry point — ~5 lines, wires Game to PlayScene
+├── engine/                reusable systems — copy into a new project as-is
+│   ├── game.py            owns the window, the clock, and the run loop
+│   ├── scene.py           base class for one game screen/mode
+│   ├── entity.py          base class every game object inherits from
+│   ├── entity_manager.py  registry of all live entities, grouped by name
+│   ├── camera.py          world ↔ screen coordinate conversion, edge-clamped scroll
+│   ├── animation.py       picks the right sprite frame for the current direction
+│   ├── collision.py       rectangle overlap checks between entity groups
+│   ├── resource_loader.py loads + caches images, cuts sprite sheets
+│   ├── input.py           polls WASD into a normalized 8-directional vector
+│   ├── spawner.py         turns a JSON file into live entities via a factory fn
+│   └── config.py          every tunable constant in one place
+├── entities/              THIS game's objects, built on engine/entity.py
+│   ├── player.py
+│   ├── enemy.py
+│   └── missile.py
+├── scenes/
+│   └── play_scene.py      wires engine systems + entities into one playable scene
+├── data/
+│   └── enemies.json       enemy spawn positions / speeds / trails
+├── assets/
+│   ├── images/            art (see per-folder README.md for used vs. not-yet-wired)
+│   ├── sounds/             empty — see assets/sounds/README.md
+│   └── fonts/               empty — see assets/fonts/README.md
+└── docs/
+    └── M151_Simple_Engine_Guide.pdf   this document</div>
+
+<h3>engine/ — the reusable part</h3>
+<p>
+Every file here works with plain data (numbers, dicts, generic
+<code>Entity</code> objects) and pygame primitives. Nothing here imports
+<code>Player</code>, <code>Enemy</code>, or anything from
+<code>data/enemies.json</code>. If you started a brand-new game tomorrow,
+you could copy this whole folder over unchanged.
+</p>
+
+<h3>entities/ — this game's objects</h3>
+<p>
+<code>Player</code>, <code>Enemy</code>, and <code>Missile</code> are
+where game-specific behavior lives: what WASD does, what "patrol" means,
+how a missile picks its velocity. They all inherit from
+<code>engine.entity.Entity</code>, which is what lets them share
+<code>EntityManager</code> and the collision system.
+</p>
+
+<h3>scenes/ — wiring, not systems</h3>
+<p>
+<code>PlayScene</code> is deliberately the "messy" file — it's the one
+place allowed to know about both <code>engine/</code> and
+<code>entities/</code> at once. It loads images, builds the player and
+enemies, and tells <code>EntityManager</code>/<code>Camera</code>/
+<code>CollisionSystem</code> what to do each frame. When you add a title
+screen or a pause screen, it'll be a new file in this folder, not a
+change to <code>PlayScene</code>.
+</p>
+
+<h3>data/ — tuning without touching code</h3>
+<p>
+<code>enemies.json</code> is the only file you need to edit to change
+which enemies exist, where they start, how fast they move, and which
+movement trail they use. See Chapter 7 for the exact format.
+</p>
+</div>
+
+<!-- ══════════════════════ CHAPTER 3 ══════════════════════ -->
+<div class="chapter">
+<h2>3 · The Camera &amp; Coordinate Spaces</h2>
+
+<p>
+Three coordinate spaces show up everywhere in this engine, and keeping
+them straight is the single most useful mental model for any 2D game
+with a scrolling map:
+</p>
+
+<ul>
+<li><strong>World space</strong> — where an entity truly lives, on the
+full map. The demo's map is <strong>1920 × 5760 px</strong>. The player
+spawns at its exact center: world <strong>(960, 2880)</strong>.</li>
+<li><strong>Camera space</strong> — the rectangle of the world currently
+visible: a <strong>960 × 540</strong> window starting at
+(<code>camera.x</code>, <code>camera.y</code>).</li>
+<li><strong>Screen space</strong> — where something actually gets drawn,
+in pixels from the top-left of the window.</li>
+</ul>
+
+<div class="diagram no-break">
+  <div class="world">
+    <span class="world-label">World map — 1920 × 5760 px</span>
+    <div class="camera">
+      <span class="camera-label">Camera viewport — 960 × 540 px</span>
+      <div class="player"></div>
+      <span class="player-label">player</span>
+    </div>
+  </div>
+</div>
+<div class="figure-caption">Fig. 3.1 — Only what's inside the camera rectangle is ever drawn to the screen.</div>
+
+<h3>The formula</h3>
+<pre><code>def world_to_screen(self, world_x, world_y):
+    return world_x - self.x, world_y - self.y</code></pre>
+
+<div class="callout">
+<span class="tag">Worked example</span>
+Say the player has walked to world <strong>(2100, 3080)</strong>, and the
+camera's top-left corner is currently at world <strong>(1632, 2810)</strong>:
+<pre><code>screen_x = 2100 - 1632 = 468
+screen_y = 3080 - 2810 = 270</code></pre>
+The sprite is blitted at pixel <strong>(468, 270)</strong> — just left of
+screen-center, exactly as you'd expect for a camera roughly centered on
+the player. This one line is the entire relationship between an entity
+and the camera: <code>Entity.draw()</code> never touches
+<code>camera.x</code>/<code>camera.y</code> directly, it just receives
+already-converted screen coordinates.
+</div>
+
+<h3>Why the camera has a dead-zone</h3>
+<p>
+<code>Camera.follow()</code> doesn't lock the camera exactly onto the
+player's center every frame — that makes tiny back-and-forth movements
+look jittery. Instead it only re-aims once the player drifts past the
+middle third of the screen horizontally (half/four-fifths vertically),
+then clamps the result so the camera never scrolls past the map edge:
+</p>
+<pre><code>self.x = max(0.0, min(target_x, float(map_w - self.screen_w)))
+self.y = max(0.0, min(target_y, float(map_h - self.screen_h)))</code></pre>
+<p>
+Near a map edge, the camera "stops" at that clamp limit while the player
+keeps moving — the player visually slides toward the edge of the screen
+instead of staying centered. That's correct behavior, not a bug: it's
+the only way to avoid showing black space beyond the map.
+</p>
+
+<div class="callout why">
+<span class="tag">Why draw_map uses area=</span>
+<pre><code>surface.blit(map_surface, (0, 0),
+             area=(int(self.x), int(self.y), self.screen_w, self.screen_h))</code></pre>
+The <code>area=</code> parameter tells pygame "copy only this rectangle
+out of the source image." That keeps the per-frame cost fixed at
+960×540 pixels no matter how large the map grows. The naive alternative,
+<code>surface.blit(map_surface, (-cam_x, -cam_y))</code>, draws the
+<em>entire</em> map every frame and lets pygame clip the off-screen part
+— it looks identical but does far more work for nothing.
+</div>
+</div>
+
+<!-- ══════════════════════ CHAPTER 4 ══════════════════════ -->
+<div class="chapter">
+<h2>4 · Input &amp; Direction Normalization</h2>
+
+<p>
+<code>InputManager.read_movement()</code> polls WASD and returns a unit
+vector plus a direction name. The one non-obvious piece of math here is
+<strong>why diagonal movement gets multiplied by 0.707</strong>.
+</p>
+
+<div class="callout why">
+<span class="tag">The problem</span>
+Pure up movement (W only) gives <code>dx=0, dy=-1</code>, a vector of
+length <code>√(0² + 1²) = 1.0</code>. But naive diagonal movement (W+D)
+gives <code>dx=1, dy=-1</code> — a vector of length
+<code>√(1² + 1²) ≈ 1.414</code>. Multiplied by speed and dt unchanged,
+the player would move <strong>41% faster</strong> diagonally than in a
+straight line, purely as a side effect of the Pythagorean theorem.
+</div>
+
+<div class="callout">
+<span class="tag">The fix</span>
+Scale each diagonal component by <code>1/√2 ≈ 0.70710678</code>:
+<pre><code>dx = 0.707, dy = -0.707
+length = √(0.707² + 0.707²) = √(0.5 + 0.5) = √1.0 = 1.0 ✓</code></pre>
+Same magnitude as a cardinal move, so multiplying by <code>speed * dt</code>
+afterward produces equal real-world speed in all 8 directions.
+</div>
+
+<pre><code>match (up, down, left, right):
+    case (True,  False, True,  False): return (-d, -d, config.UP_LEFT)
+    case (True,  False, False, True):  return ( d, -d, config.UP_RIGHT)
+    ...
+    case _:                            return (0.0, 0.0, None)</code></pre>
+<p>
+Matching on the 4-key tuple covers all 8 directions (4 cardinal + 4
+diagonal) in one place. Opposing keys (W+S, or A+D) simply aren't in the
+match table, so they fall through to the default case: no movement,
+direction unchanged.
+</p>
+</div>
+
+<!-- ══════════════════════ CHAPTER 5 ══════════════════════ -->
+<div class="chapter">
+<h2>5 · Entity, EntityManager, Scene, Game</h2>
+
+<p>
+This is the architecture that no earlier M151_Engine prototype had, and
+it's the biggest structural upgrade in this folder.
+</p>
+
+<h3>Entity — one shape for everything</h3>
+<p>
+In the older prototypes, <code>Player</code> and <code>Enemy</code>
+inherited from <code>Entity</code>, but <code>Missile</code> did not —
+even though it had the exact same <code>world_x</code> /
+<code>world_y</code> / <code>update()</code> / <code>draw()</code> shape.
+That inconsistency is exactly why every prototype had to hand-write its
+own missile-vs-enemy check instead of a reusable "compare group A against
+group B." Here, <strong>everything</strong> that lives in the world —
+player, enemies, missiles, future pickups — inherits from
+<code>Entity</code>.
+</p>
+
+<h3>EntityManager — one registry, named groups</h3>
+<table>
+<tr><th>Before (per-prototype)</th><th>Now (EntityManager)</th></tr>
+<tr><td><code>self.enemy</code> — one hardcoded slot<br>
+<code>self.missiles</code> — a bare list<br>
+Each prototype rewrites its own update/draw/cleanup loop.</td>
+<td><code>entities.add(obj, group="enemies")</code><br>
+<code>entities.update(dt, map_w, map_h)</code> — one loop, any group<br>
+<code>entities.draw(surface, camera, draw_order=[...])</code></td></tr>
+</table>
+
+<div class="callout why">
+<span class="tag">Why kill() is deferred</span>
+<code>Entity.kill()</code> only sets <code>alive = False</code>. Removal
+happens once per frame in <code>EntityManager.purge_dead()</code>,
+<em>after</em> collision checks. Mutating a list mid-iteration
+(<code>list.remove()</code> inside a <code>for</code> loop over that same
+list) silently skips the element right after the one you removed — a
+classic bug where a hit enemy "survives" every other frame. Deferred
+removal sidesteps the whole problem.
+</div>
+
+<h3>Scene — swappable game states</h3>
+<p>
+<code>Scene</code> is three empty hook methods:
+<code>handle_event</code>, <code>update</code>, <code>draw</code>.
+<code>PlayScene</code> is the only one that exists right now, but the
+mechanism for adding a title screen or pause menu is just: write a new
+<code>Scene</code> subclass, and set <code>game.scene</code> to an
+instance of it. No branching logic anywhere else has to change.
+</p>
+
+<h3>Game — the loop, written once</h3>
+<pre><code>game = Game()          # pygame.init() + set_mode() happen here
+game.run(PlayScene())  # PlayScene is only constructed AFTER that</code></pre>
+<div class="callout why">
+<span class="tag">Why Game() takes no Scene in its constructor</span>
+Loading an image with <code>Surface.convert()</code> requires a display
+mode to already be set. If you wrote <code>Game(PlayScene())</code>
+instead, Python would construct <code>PlayScene()</code> — which loads
+images — <em>before</em> <code>Game.__init__</code> gets a chance to run
+<code>pygame.init()</code>, and it would crash immediately. Building the
+window first, then handing the Scene to <code>run()</code> as a separate
+statement, guarantees the right order. This is a real ordering bug that
+came up while building this very demo — worth knowing before you hit it
+yourself.
+</div>
+</div>
+
+<!-- ══════════════════════ CHAPTER 6 ══════════════════════ -->
+<div class="chapter">
+<h2>6 · Animation &amp; Collision</h2>
+
+<h3>Animator</h3>
+<p>
+The art in this demo has exactly one frame per direction, so animation
+currently looks static. <code>Animator</code> is still built to support
+<em>lists</em> of frames per direction:
+</p>
+<pre><code>self._frames = {
+    direction: (surfaces if isinstance(surfaces, list) else [surfaces])
+    for direction, surfaces in frames.items()
+}</code></pre>
+<div class="callout try">
+<span class="tag">Try it yourself</span>
+Give <code>Enemy</code> a two-frame walk cycle by passing
+<code>{"right": [frame_a, frame_b], ...}</code> instead of a single
+Surface per direction — <code>Animator.update()</code> will start
+advancing frames automatically once it sees a list with more than one
+entry. Nothing in <code>Enemy</code>, <code>EntityManager</code>, or
+<code>PlayScene</code> needs to change.
+</div>
+
+<h3>Collision</h3>
+<p>
+<code>collision.check_groups(missiles, enemies, on_hit)</code> builds one
+list of hitboxes for group B, then checks every entity in group A against
+it with <code>pygame.Rect.collidelist()</code> — an O(n) scan per query.
+</p>
+<div class="callout">
+<span class="tag">Note</span>
+O(n) per query is completely fine at the entity counts this demo (and
+most learning projects) deal with — tens of entities, not thousands. A
+spatial grid or quadtree only starts to matter once you have hundreds of
+moving colliders on screen simultaneously. Building that before you can
+measure it being slow is solving a problem you don't have yet.
+</div>
+<p>
+Collision hitboxes are always computed in <strong>world space</strong>
+(<code>Entity.get_hitbox()</code>), never screen space — so a hit
+registers correctly no matter where the camera happens to be looking.
+Press <strong>F1</strong> in the running demo to see these hitboxes drawn
+directly onto the screen via <code>collision.draw_debug_hitboxes()</code>.
+</p>
+</div>
+
+<!-- ══════════════════════ CHAPTER 7 ══════════════════════ -->
+<div class="chapter">
+<h2>7 · Data-Driven Spawning</h2>
+
+<p>
+<code>data/enemies.json</code> is the only file you should need to touch
+to change what enemies exist:
+</p>
+<pre><code>{
+  "id": "alpha",
+  "spawn_x_from_center": 260,
+  "spawn_y_from_center": 0,
+  "trail": "patrol",
+  "speed": 180
+}</code></pre>
+
+<table>
+<tr><th>Field</th><th>Meaning</th></tr>
+<tr><td><code>id</code></td><td>Label printed to the console when this enemy is destroyed.</td></tr>
+<tr><td><code>spawn_x_from_center</code><br><code>spawn_y_from_center</code></td>
+<td>Pixel offset from the map's exact center — not an absolute position.</td></tr>
+<tr><td><code>trail</code></td><td><code>"patrol"</code> (cycle all 8 compass directions on a timer),
+<code>"bounce"</code> (billiard-ball diagonal bounce off map edges), or
+<code>"zigzag"</code> (alternating horizontal/vertical legs).</td></tr>
+<tr><td><code>speed</code></td><td>World pixels per second.</td></tr>
+</table>
+
+<div class="callout why">
+<span class="tag">Why offsets from center, not absolute pixels</span>
+<code>JSONSpawner.load()</code> computes
+<code>world_x = map_w / 2 + spec["spawn_x_from_center"]</code>. Using an
+offset from the map's center instead of a hardcoded pixel position means
+the exact same <code>enemies.json</code> keeps working if you swap in a
+differently-sized map image — nothing has to be recalculated by hand.
+</div>
+
+<h3>The factory pattern</h3>
+<pre><code>def load(self, key: str, factory) -> list:
+    ...
+    for spec in data.get(key, []):
+        world_x = self._map_w / 2 + spec.get("spawn_x_from_center", 0)
+        world_y = self._map_h / 2 + spec.get("spawn_y_from_center", 0)
+        spawned.append(factory(spec, world_x, world_y))
+    return spawned</code></pre>
+<p>
+<code>JSONSpawner</code> doesn't know how to build an <code>Enemy</code>
+— <code>PlayScene._make_enemy()</code> does, and gets passed in as
+<code>factory</code>. This is the general version of the ad hoc
+<code>EnemySpawner</code> in
+<code>examples/enemies_spawner/spawner-example.py</code>: because the
+"how do I build one" logic is injected rather than hardcoded, the exact
+same <code>JSONSpawner</code> class could just as easily spawn pickups,
+obstacles, or anything else you invent, from a different JSON file.
+</p>
+</div>
+
+<!-- ══════════════════════ CHAPTER 8 ══════════════════════ -->
+<div class="chapter">
+<h2>8 · Exercises</h2>
+<p>Roughly in order of difficulty. Each one only touches one or two files.</p>
+
+<ol class="step-list">
+<li><strong>Add a fifth enemy.</strong> Add one more object to
+<code>data/enemies.json</code> with a new <code>id</code>, offset, trail,
+and speed. No code changes at all — this is the whole point of Chapter 7.</li>
+
+<li><strong>Add a fourth movement trail.</strong> Add a
+<code>_update_spiral()</code> (or anything you like) method to
+<code>entities/enemy.py</code>, and one <code>elif</code> branch in
+<code>Enemy.update()</code>. Reference it from
+<code>enemies.json</code> as <code>"trail": "spiral"</code>.</li>
+
+<li><strong>Swap the map.</strong> Point
+<code>engine/config.py</code>'s <code>MAP_IMAGE</code> at
+<code>assets/images/background/land/test-land.png</code> instead. Check
+that image's size and adjust the spawn offsets in
+<code>enemies.json</code> if enemies now land outside the map.</li>
+
+<li><strong>Give one enemy a full-image sprite</strong> instead of a
+sheet-cut one. Load e.g. <code>assets/images/enemies/BossTank.png</code>
+directly with <code>ResourceLoader.load_image()</code>, and give
+<code>Enemy</code> an optional constructor argument to use a single
+static image instead of the direction-keyed <code>Animator</code>.</li>
+
+<li><strong>Add a title screen.</strong> Write a
+<code>scenes/title_scene.py</code> with a <code>TitleScene(Scene)</code>
+that draws <code>assets/images/screens/Title ScreenText.png</code> and
+waits for a keypress, then update <code>main.py</code> to start on
+<code>TitleScene</code>. See Chapter 5 for why swapping scenes needs no
+changes to <code>Game</code>.</li>
+
+<li><strong>Add a sound effect.</strong> Follow the steps in
+<code>assets/sounds/README.md</code> to build a minimal
+<code>engine/audio.py</code>, then call it from
+<code>PlayScene._fire_missile()</code> and
+<code>PlayScene._on_missile_hit_enemy()</code>.</li>
+</ol>
+</div>
+
+<!-- ══════════════════════ CHAPTER 9 ══════════════════════ -->
+<div class="chapter">
+<h2>9 · Where To Go Next</h2>
+<p>
+This engine is intentionally small. Here's what's missing compared to a
+"full" 2D engine, why it isn't here yet, and what adding it would
+actually involve — so you can pick the next thing deliberately instead of
+guessing.
+</p>
+
+<table>
+<tr><th>Missing piece</th><th>Why it's not here yet</th><th>What adding it looks like</th></tr>
+<tr>
+<td>Sound</td>
+<td>No sound assets exist in the project yet — building the system before
+you have a real file to test against means guessing at the API.</td>
+<td>See <code>assets/sounds/README.md</code> and Exercise 6.</td>
+</tr>
+<tr>
+<td>Title / pause / game-over screens</td>
+<td>One <code>Scene</code> was enough to prove the architecture; a scene
+<em>stack</em> (for pausing without losing <code>PlayScene</code>'s
+state) is the natural next step once you have &gt;1 scene.</td>
+<td>See Exercise 5, then generalize <code>Game.scene</code> into a list
+you push/pop instead of a single reference.</td>
+</tr>
+<tr>
+<td>Tile-based levels</td>
+<td>The demo uses one big pre-rendered map image, which is simpler to
+reason about first. A tilemap (grid of small reusable tiles + a level
+format like Tiled's <code>.tmx</code>) is how most 2D engines actually
+handle large or procedurally varied worlds.</td>
+<td>A new <code>engine/tilemap.py</code> that loads a tile atlas + a
+2D grid of tile indices, and a <code>Camera.draw_map()</code> variant
+that draws visible tiles instead of one <code>area=</code> blit.</td>
+</tr>
+<tr>
+<td>Spatial partitioning for collision</td>
+<td>Not needed at this entity count — see the callout in Chapter 6.</td>
+<td>A grid or quadtree that only checks entities in nearby cells, once
+you actually have hundreds of colliders and can measure the slowdown.</td>
+</tr>
+<tr>
+<td>Save / load</td>
+<td>Nothing yet is worth persisting between runs.</td>
+<td>Serialize whatever state matters (player position, remaining
+enemies) to JSON — the same library <code>JSONSpawner</code> already
+uses.</td>
+</tr>
+<tr>
+<td>Particle effects</td>
+<td>Purely cosmetic polish; adding it before the core loop is solid would
+be decoration on an unfinished structure.</td>
+<td>A <code>Particle(Entity)</code> with a fixed lifetime and no
+collision, managed by the same <code>EntityManager</code> group
+mechanism already in place.</td>
+</tr>
+</table>
+
+<div class="footerline">
+M151 Simple Engine — a reference implementation, not a finished game.
+Every system above is small enough to read start-to-finish in a few
+minutes; that's on purpose.
+</div>
+</div>
+
+</body>
+</html>

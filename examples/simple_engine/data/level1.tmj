@@ -1,0 +1,104 @@
+{
+  "compressionlevel": -1,
+  "height": 180,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "image": "../assets/images/map/m151_practice_stage.png",
+      "name": "background",
+      "opacity": 1,
+      "type": "imagelayer",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "enemies",
+      "opacity": 1,
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "objects": [
+        {
+          "id": 1,
+          "name": "alpha",
+          "type": "enemy_spawn",
+          "x": 1220,
+          "y": 2880,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            { "name": "trail", "type": "string", "value": "patrol" },
+            { "name": "speed", "type": "int", "value": 180 }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "bravo",
+          "type": "enemy_spawn",
+          "x": 700,
+          "y": 2880,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            { "name": "trail", "type": "string", "value": "bounce" },
+            { "name": "speed", "type": "int", "value": 200 }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "charlie",
+          "type": "enemy_spawn",
+          "x": 960,
+          "y": 3140,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            { "name": "trail", "type": "string", "value": "zigzag" },
+            { "name": "speed", "type": "int", "value": 150 }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "delta",
+          "type": "enemy_spawn",
+          "x": 960,
+          "y": 2620,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            { "name": "trail", "type": "string", "value": "patrol" },
+            { "name": "speed", "type": "int", "value": 220 }
+          ]
+        }
+      ]
+    }
+  ],
+  "nextlayerid": 3,
+  "nextobjectid": 5,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.10.2",
+  "tileheight": 32,
+  "tilesets": [],
+  "tilewidth": 32,
+  "type": "map",
+  "version": "1.10",
+  "width": 60
+}

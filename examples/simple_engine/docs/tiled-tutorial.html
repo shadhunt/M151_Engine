@@ -1,0 +1,617 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>M151 Simple Engine — Tiled Tutorial</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+
+  :root{
+    --ink:#1c2530;
+    --heading:#123a63;
+    --accent:#2563eb;
+    --note-bg:#eef5ff;   --note-border:#2563eb;
+    --why-bg:#fff7ed;    --why-border:#c2660c;
+    --try-bg:#eefaf3;    --try-border:#0f8a5f;
+    --gotcha-bg:#fef2f2; --gotcha-border:#b91c1c;
+    --code-bg:#f4f5f7;
+    --rule:#d7dde5;
+  }
+
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"DejaVu Serif","Noto Serif",serif;
+    font-size:11.3pt;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  h1,h2,h3,h4{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    color:var(--heading);
+    line-height:1.25;
+  }
+  h1{ font-size:23pt; margin:0 0 6mm 0; }
+  h2{ font-size:16pt; border-bottom:2px solid var(--rule); padding-bottom:2mm; margin:0 0 5mm 0; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:7mm 0 2mm 0; }
+  h4{ font-size:11pt; margin:5mm 0 1mm 0; color:var(--accent); }
+
+  p{ margin:0 0 3mm 0; }
+  ul, ol{ margin:0 0 4mm 0; padding-left:5mm; }
+  li{ margin-bottom:1.4mm; }
+
+  code{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    padding:0.5px 4px;
+    border-radius:3px;
+    font-size:9.6pt;
+  }
+  pre{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+    border-radius:3px;
+    padding:3mm 4mm;
+    font-size:9.3pt;
+    line-height:1.45;
+    white-space:pre-wrap;
+    margin:0 0 4mm 0;
+  }
+  pre code{ background:none; padding:0; border-radius:0; }
+
+  .ui{
+    font-family:"DejaVu Sans",sans-serif;
+    background:#eef1f5;
+    border:1px solid #d3dae3;
+    padding:0.5px 5px;
+    border-radius:3px;
+    font-size:9.8pt;
+    color:#28405f;
+    white-space:nowrap;
+  }
+
+  .callout{
+    border-left:4px solid var(--note-border);
+    background:var(--note-bg);
+    padding:3mm 4mm;
+    margin:0 0 4mm 0;
+    border-radius:0 4px 4px 0;
+  }
+  .callout .tag{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    font-weight:bold;
+    font-size:8.6pt;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:1.2mm;
+    color:var(--note-border);
+  }
+  .callout.why{ background:var(--why-bg); border-left-color:var(--why-border); }
+  .callout.why .tag{ color:var(--why-border); }
+  .callout.try{ background:var(--try-bg); border-left-color:var(--try-border); }
+  .callout.try .tag{ color:var(--try-border); }
+  .callout.gotcha{ background:var(--gotcha-bg); border-left-color:var(--gotcha-border); }
+  .callout.gotcha .tag{ color:var(--gotcha-border); }
+
+  table{ border-collapse:collapse; width:100%; margin:0 0 4mm 0; font-size:9.8pt; }
+  th,td{ border:1px solid var(--rule); padding:1.8mm 2.6mm; text-align:left; vertical-align:top; }
+  th{ font-family:"DejaVu Sans",sans-serif; background:#f1f4f8; color:var(--heading); }
+
+  .chapter{ page-break-before:always; }
+  .titlepage{ page-break-after:always; }
+
+  .titlepage{
+    height:250mm;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    border-top:6px solid var(--accent);
+    padding-top:20mm;
+  }
+  .titlepage .kicker{
+    font-family:"DejaVu Sans",sans-serif;
+    color:var(--accent);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:10.5pt;
+    margin-bottom:6mm;
+  }
+  .titlepage h1{ font-size:30pt; margin-bottom:4mm; }
+  .titlepage .subtitle{
+    font-family:"DejaVu Sans",sans-serif;
+    font-size:14pt;
+    color:#3b4657;
+    max-width:135mm;
+    margin-bottom:14mm;
+  }
+  .titlepage .meta{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:9.5pt;
+    color:#5b6577;
+    border-top:1px solid var(--rule);
+    padding-top:4mm;
+    max-width:135mm;
+    line-height:1.7;
+  }
+
+  .toc-list{ list-style:none; padding:0; }
+  .toc-list li{
+    font-family:"DejaVu Sans",sans-serif;
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px dotted var(--rule);
+    padding:2mm 0;
+    margin:0;
+  }
+  .toc-list .num{ color:var(--accent); font-weight:bold; margin-right:3mm; }
+
+  .step-list{ counter-reset:step; list-style:none; padding-left:0; }
+  .step-list > li{
+    counter-increment:step;
+    position:relative;
+    padding-left:8mm;
+    margin-bottom:2.6mm;
+  }
+  .step-list > li::before{
+    content: counter(step);
+    position:absolute; left:0; top:0;
+    width:5.5mm; height:5.5mm; border-radius:50%;
+    background:var(--accent); color:#fff;
+    font-family:"DejaVu Sans",sans-serif; font-size:8pt; font-weight:bold;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .files-box{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:9pt;
+    background:#f8f9fb;
+    border:1px dashed var(--rule);
+    padding:2.5mm 4mm;
+    margin:0 0 4mm 0;
+    color:#3b4657;
+  }
+
+  .footerline{
+    margin-top:10mm; padding-top:2mm; border-top:1px solid var(--rule);
+    font-family:"DejaVu Sans",sans-serif; font-size:8.5pt; color:#8592a5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ TITLE PAGE ══════════════════════ -->
+<div class="titlepage">
+  <div class="kicker">M151 Engine — examples/simple_engine/docs</div>
+  <h1>Tiled Tutorial</h1>
+  <div class="subtitle">
+    Draw a map with objects in Tiled, export it as JSON, and load it into
+    the engine you already built — replacing a flat background image
+    with a real, editable level format.
+  </div>
+  <div class="meta">
+    Editor: Tiled (mapeditor.org) — free, open source<br>
+    Companion code: engine/tilemap.py · data/level1.tmj ·
+    scenes/tiled_play_scene.py<br>
+    Try it now: <code>python main_tiled_demo.py</code>
+  </div>
+</div>
+
+<!-- ══════════════════════ TOC ══════════════════════ -->
+<div class="chapter">
+<h2>Table of Contents</h2>
+<ul class="toc-list">
+  <li><span><span class="num">1</span>Why Move Off a Flat Image</span><span>what you gain from Tiled</span></li>
+  <li><span><span class="num">2</span>Installing Tiled</span><span>one-time, then fully offline</span></li>
+  <li><span><span class="num">3</span>Your First Map</span><span>the New Map wizard, explained</span></li>
+  <li><span><span class="num">4</span>Keeping Your Existing Art</span><span>the Image Layer</span></li>
+  <li><span><span class="num">5</span>Drawing Objects</span><span>spawn points, names, custom properties</span></li>
+  <li><span><span class="num">6</span>Saving as JSON</span><span>.tmj, and what's actually in it</span></li>
+  <li><span><span class="num">7</span>Loading It In Your Engine</span><span>the real, tested code</span></li>
+  <li><span><span class="num">8</span>Coordinate Gotchas</span><span>point vs. rectangle vs. tile objects</span></li>
+  <li><span><span class="num">9</span>Exercises</span><span>five hands-on extensions</span></li>
+  <li><span><span class="num">10</span>Tiled Troubleshooting</span><span>offline-friendly fixes</span></li>
+  <li><span><span class="num">11</span>Porting Into M151_Engine</span><span>replacing the empty level_loader.py stub</span></li>
+</ul>
+</div>
+
+<!-- ══════════════════════ 1 ══════════════════════ -->
+<div class="chapter">
+<h2>1 · Why Move Off a Flat Image</h2>
+<p>
+Right now your maps are one big painted image
+(<code>assets/images/map/m151_practice_stage.png</code>) with spawn
+positions hand-typed as pixel offsets in a separate JSON file
+(<code>data/enemies.json</code>). That works, but it has a real
+limitation: <strong>the map file and the placement data live in two
+unrelated places</strong>, and lining them up means guessing pixel
+coordinates, running the game, and adjusting numbers by trial and error.
+</p>
+<p>
+Tiled fixes this by letting you draw directly on top of your map and
+place named, typed, propertied <strong>objects</strong> exactly where
+you want them, visually. Export that as JSON and you get one file that
+describes both the map and everything that spawns on it —
+<code>data/enemies.json</code>'s job, absorbed into the same file as the
+map itself.
+</p>
+<div class="callout why">
+<span class="tag">What you're NOT giving up</span>
+You don't have to redraw your background art as tiles. Tiled supports an
+<strong>Image Layer</strong> that displays one big picture exactly like
+you're doing now — Chapter 4 covers this directly. Objects (spawn
+points, collision zones) go in a separate layer on top. You can adopt
+Tiled today without touching your existing art at all.
+</div>
+</div>
+
+<!-- ══════════════════════ 2 ══════════════════════ -->
+<div class="chapter">
+<h2>2 · Installing Tiled</h2>
+<p>
+Tiled is free, open source, and available for Windows, macOS, and Linux
+from <strong>mapeditor.org</strong>. This is the one step in this whole
+tutorial that needs an internet connection — download the installer (or
+the portable/AppImage build on Linux) once, and everything after that
+works completely offline. There's no license key, no account, no
+online-only features.
+</p>
+<div class="callout">
+<span class="tag">Note</span>
+This tutorial describes Tiled's stable 1.x workflow — new-map creation,
+layers, objects, and JSON export. These have been stable for years and
+are extremely unlikely to have moved to different menus even if your
+installed version differs slightly from the one this was written
+against.
+</div>
+</div>
+
+<!-- ══════════════════════ 3 ══════════════════════ -->
+<div class="chapter">
+<h2>3 · Your First Map</h2>
+<p><span class="ui">File ▸ New ▸ New Map…</span> opens a dialog with a few settings that matter:</p>
+<table>
+<tr><th>Setting</th><th>What to pick</th><th>Why</th></tr>
+<tr><td>Orientation</td><td>Orthogonal</td><td>A plain top-down grid — matches this engine's camera, which has no concept of isometric or hexagonal projection.</td></tr>
+<tr><td>Tile layer format</td><td>Base64 (zlib compressed), or leave default</td><td>Only matters if you paint tile layers later (Exercise 5). Doesn't affect image layers or objects at all.</td></tr>
+<tr><td>Tile render order</td><td>Right Down (default)</td><td>Irrelevant for image layers and objects; only affects tile-layer draw order.</td></tr>
+<tr><td>Map size</td><td>Fixed, not Infinite</td><td>Leave <strong>"Infinite map"</strong> unchecked. Infinite maps store tile data in chunks, which is real added complexity this tutorial's loader deliberately doesn't handle (see <code>engine/tilemap.py</code>'s check for this).</td></tr>
+<tr><td>Tile width / height</td><td>32 × 32</td><td>Matches this project's sprite sheet cell size (<code>config.SPRITE_W</code>/<code>SPRITE_H</code>). This only sets the editor's grid snapping — it does not resize your background image.</td></tr>
+<tr><td>Map width / height (in tiles)</td><td>Match your background image's pixel size ÷ tile size</td><td>E.g. a 1920×5760px background at 32px tiles needs a 60×180 tile map, so the canvas is exactly big enough to contain it.</td></tr>
+</table>
+<div class="callout try">
+<span class="tag">Worked example</span>
+<code>assets/images/map/m151_practice_stage.png</code> is 1920×5760 pixels.
+At 32×32 tiles, that's <strong>60 tiles wide, 180 tiles tall</strong> —
+exactly the numbers used in this tutorial's sample
+<code>data/level1.tmj</code>.
+</div>
+</div>
+
+<!-- ══════════════════════ 4 ══════════════════════ -->
+<div class="chapter">
+<h2>4 · Keeping Your Existing Art: the Image Layer</h2>
+<p>
+With the new map open, remove the default empty tile layer (right-click
+it in the Layers panel ▸ <span class="ui">Remove Layer</span>), then add
+an image layer instead:
+</p>
+<ol class="step-list">
+<li><span class="ui">Layer ▸ New ▸ Image Layer</span></li>
+<li>In the Properties panel (bottom-right by default), click the
+<code>Image</code> field's <code>…</code> button and browse to your
+existing map art — e.g. <code>assets/images/map/m151_practice_stage.png</code>.</li>
+<li>Leave the layer's <code>X</code> / <code>Y</code> offset at 0, 0 so
+the image's top-left corner lines up with world-space (0, 0) — the same
+convention <code>Entity.world_x</code>/<code>world_y</code> already uses.</li>
+<li>Rename the layer to something you'll recognize in code later, e.g.
+<code>background</code> — the loader looks layers up by name.</li>
+</ol>
+<p>
+Your existing artwork now shows up in the Tiled canvas exactly as
+painted, and you can draw objects directly on top of it, visually lined
+up against the real background — something pixel-guessing in a JSON file
+could never give you.
+</p>
+</div>
+
+<!-- ══════════════════════ 5 ══════════════════════ -->
+<div class="chapter">
+<h2>5 · Drawing Objects</h2>
+<p>Add a layer to hold your spawn points:</p>
+<ol class="step-list">
+<li><span class="ui">Layer ▸ New ▸ Object Layer</span>, name it
+<code>enemies</code> (matching whatever name your loading code will ask for).</li>
+<li>Select the <strong>Insert Point</strong> tool (a small crosshair icon
+in the toolbar, or press <code>P</code>← check your version's shortcut
+in <span class="ui">View ▸ Toolbars</span> if unsure) and click once on
+the canvas, right where you want an enemy to spawn. A point object needs
+no width or height — it's just a location.</li>
+<li>With the new object selected, use the Properties panel to set:
+<ul>
+<li><strong>Name</strong> — a label for this specific object, e.g. <code>alpha</code>.</li>
+<li><strong>Class</strong> (older Tiled calls this "Type") — a category shared by similar objects, e.g. <code>enemy_spawn</code>.</li>
+</ul>
+</li>
+<li>Repeat for every enemy you want to place. Use the regular Select
+tool afterward to drag any point to a new spot — no coordinates to
+retype by hand.</li>
+</ol>
+
+<h3>Custom Properties</h3>
+<p>
+With an object selected, find the <strong>Custom Properties</strong>
+section of the Properties panel and click the <code>+</code> button to
+add one. This is how you attach the same data
+<code>data/enemies.json</code> already stores per enemy — just typed
+into fields instead of JSON syntax:
+</p>
+<table>
+<tr><th>Property name</th><th>Type</th><th>Example value</th></tr>
+<tr><td><code>trail</code></td><td>string</td><td><code>patrol</code>, <code>bounce</code>, or <code>zigzag</code></td></tr>
+<tr><td><code>speed</code></td><td>int</td><td><code>180</code></td></tr>
+</table>
+<div class="callout">
+<span class="tag">Note</span>
+These property names aren't special to Tiled — they're just labels
+<em>you</em> chose to match what <code>Enemy.__init__</code> already
+expects (<code>trail=</code>, <code>speed=</code>). Tiled has no idea
+what an "Enemy" is; it just stores whatever named properties you type,
+as data, for your code to read back later.
+</div>
+</div>
+
+<!-- ══════════════════════ 6 ══════════════════════ -->
+<div class="chapter">
+<h2>6 · Saving as JSON</h2>
+<p>
+<span class="ui">File ▸ Export As…</span>, choose <strong>JSON map
+files (*.tmj)</strong> as the file type. (Some Tiled versions let you
+<span class="ui">Save As</span> directly with a <code>.tmj</code>
+extension instead of a separate export step — either produces the same
+format.) Save it as <code>data/level1.tmj</code> in your project.
+</p>
+
+<h3>What's actually inside the file</h3>
+<p>
+Open the exported <code>.tmj</code> in a text editor — it's plain JSON.
+The parts this engine's loader cares about:
+</p>
+<pre><code>{
+  "width": 60, "height": 180, "tilewidth": 32, "tileheight": 32,
+  "layers": [
+    {
+      "type": "imagelayer",
+      "name": "background",
+      "image": "../assets/images/map/m151_practice_stage.png",
+      "x": 0, "y": 0
+    },
+    {
+      "type": "objectgroup",
+      "name": "enemies",
+      "objects": [
+        {
+          "name": "alpha", "type": "enemy_spawn",
+          "x": 1220, "y": 2880,
+          "point": true,
+          "properties": [
+            { "name": "trail", "type": "string", "value": "patrol" },
+            { "name": "speed", "type": "int", "value": 180 }
+          ]
+        }
+      ]
+    }
+  ]
+}</code></pre>
+<div class="callout gotcha">
+<span class="tag">Gotcha: properties are a LIST, not a dict</span>
+Every object's <code>properties</code> field is a JSON array of
+<code>{"name", "type", "value"}</code> objects — not a plain
+<code>{"trail": "patrol"}</code> dict, even though that's what you'd
+probably reach for by hand. Loading code has to flatten this list into a
+dict itself; <code>engine/tilemap.py</code>'s
+<code>_simplify_object()</code> does exactly that:
+<pre><code>properties = {p["name"]: p["value"] for p in obj.get("properties", [])}</code></pre>
+</div>
+<div class="callout gotcha">
+<span class="tag">Gotcha: image paths are relative to the .tmj file</span>
+<code>"image": "../assets/images/map/..."</code> is relative to
+<em>wherever <code>level1.tmj</code> itself is saved</em>, not your
+current working directory or the project root. If you move the
+<code>.tmj</code> file without moving the image (or vice versa), Tiled
+will show a broken-image icon, and your loader needs to resolve the path
+the same way Tiled does — relative to the map file's own folder. That's
+exactly what <code>TiledMap.image_layer()</code>'s
+<code>self._path.parent / layer["image"]</code> does.
+</div>
+</div>
+
+<!-- ══════════════════════ 7 ══════════════════════ -->
+<div class="chapter">
+<h2>7 · Loading It In Your Engine</h2>
+<div class="files-box">Real, tested code — try it now:
+<code>python main_tiled_demo.py</code></div>
+
+<p>
+Three new files make this work, and none of them touch
+<code>engine/entity.py</code>, <code>Player</code>,
+<code>Enemy</code>, <code>Missile</code>, <code>EntityManager</code>, or
+<code>CollisionSystem</code> at all:
+</p>
+
+<h3><code>engine/tilemap.py</code> — the generic loader</h3>
+<pre><code>class TiledMap:
+    def __init__(self, tmj_path):
+        with open(tmj_path) as f:
+            self._data = json.load(f)
+        if self._data.get("infinite"):
+            raise ValueError("infinite maps aren't supported by this loader")
+        ...
+
+    def image_layer(self, name=None):
+        # returns {"path": Path, "x": int, "y": int}
+
+    def object_layer(self, name):
+        # returns [{"name", "type", "x", "y", "properties"}, ...]</code></pre>
+<p>
+This file lives in <code>engine/</code> because it doesn't know or care
+what an "Enemy" is — same rule as every other engine system in this
+project (see the main usage guide's Chapter 1). It just turns a
+<code>.tmj</code> file into plain Python data.
+</p>
+
+<h3><code>scenes/tiled_play_scene.py</code> — where the data becomes entities</h3>
+<pre><code>tiled_map = TiledMap(LEVEL_TMJ)
+background = tiled_map.image_layer("background")
+self.map_surface = self.resources.load_image(background["path"])
+
+for spec in tiled_map.object_layer("enemies"):
+    enemy = Enemy(
+        spec["name"], spec["x"], spec["y"], self._enemy_frames,
+        trail=spec["properties"].get("trail", "patrol"),
+        speed=spec["properties"].get("speed", config.ENEMY_SPEED),
+    )
+    self.entities.add(enemy, group="enemies")</code></pre>
+<div class="callout why">
+<span class="tag">Why this proves the architecture works</span>
+<code>TiledPlayScene</code> is nearly line-for-line identical to
+<code>PlayScene</code> after this point — <code>handle_event</code>,
+<code>update</code>, <code>draw</code>, missile-firing, and collision are
+completely unchanged. Swapping the entire source of level data (JSON
+file with offsets → Tiled file with absolute positions) only touched the
+handful of lines that build the initial entity list. That's the payoff
+of <code>EntityManager</code> and <code>Entity</code> not knowing where
+spawn data comes from.
+</div>
+</div>
+
+<!-- ══════════════════════ 8 ══════════════════════ -->
+<div class="chapter">
+<h2>8 · Coordinate Gotchas</h2>
+<p>
+Tiled objects always store coordinates in <strong>pixels</strong> (never
+tile units), which is convenient — no conversion math needed before
+handing an object's <code>x</code>/<code>y</code> straight to an
+<code>Entity</code>. But WHERE that x/y points depends on the object's
+shape:
+</p>
+<table>
+<tr><th>Object type</th><th>What (x, y) means</th></tr>
+<tr><td>Point (what this tutorial uses)</td><td>The point itself — exactly the location you clicked.</td></tr>
+<tr><td>Rectangle</td><td>The rectangle's <strong>top-left</strong> corner — same convention <code>Entity.world_x</code>/<code>world_y</code> already uses.</td></tr>
+<tr><td>Tile object (an object with a sprite picked from a tileset)</td><td>The <strong>bottom-left</strong> corner — a historical Tiled quirk, different from every other object type. If you ever place tile objects, subtract the object's height from y before using it as a top-left position.</td></tr>
+</table>
+<div class="callout gotcha">
+<span class="tag">Gotcha: also watch the offset-from-center vs. absolute mismatch</span>
+<code>data/enemies.json</code> stores <code>spawn_x_from_center</code> —
+an offset that <code>JSONSpawner</code> adds to <code>map_w / 2</code>.
+Tiled objects store <strong>absolute world pixels</strong> directly, with
+no such offset. <code>TiledPlayScene</code> uses
+<code>spec["x"]</code>/<code>spec["y"]</code> straight, unmodified — mixing
+the two conventions (e.g. accidentally adding <code>map_w/2</code> to a
+Tiled coordinate) would place every enemy in the wrong spot.
+</div>
+</div>
+
+<!-- ══════════════════════ 9 ══════════════════════ -->
+<div class="chapter">
+<h2>9 · Exercises</h2>
+<ol class="step-list">
+<li><strong>Add a fifth enemy purely in Tiled.</strong> Open
+<code>data/level1.tmj</code> in Tiled, place a new point object in the
+<code>enemies</code> layer, give it a name and <code>trail</code>/<code>speed</code>
+properties, export, and rerun <code>main_tiled_demo.py</code>. No Python
+changes at all.</li>
+<li><strong>Add an obstacle layer.</strong> Create a second object layer
+named <code>obstacles</code>, draw a few Rectangle objects over parts of
+the map the player shouldn't walk through, and write a small
+<code>Obstacle(Entity)</code> (static, <code>update()</code> does
+nothing) that <code>TiledPlayScene</code> spawns from that layer and
+checks the player against with <code>collision.check_groups</code>.</li>
+<li><strong>Compare both level sources side by side.</strong> Run
+<code>python main.py</code> (JSON-driven) and
+<code>python main_tiled_demo.py</code> (Tiled-driven) back to back — the
+enemy layout should feel identical, because <code>data/level1.tmj</code>
+was hand-built to mirror <code>data/enemies.json</code> exactly.</li>
+<li><strong>Rename a layer and watch it fail loudly.</strong> Rename the
+<code>enemies</code> object layer to something else in Tiled, re-export,
+and rerun the demo. Read the <code>KeyError</code>
+<code>engine/tilemap.py</code> raises — this is deliberate: a missing
+layer should be a clear, immediate error, not enemies silently failing
+to spawn.</li>
+<li><strong>Try a real tileset</strong> (bigger step). Instead of an
+Image Layer, add a Tileset (<span class="ui">Map ▸ New Tileset…</span>)
+built from small reusable tile images, and paint a Tile Layer with them.
+This is real terrain-authoring, not covered by
+<code>engine/tilemap.py</code> as written — see the main usage guide's
+Chapter 9 ("Where To Go Next") for what a tile-layer renderer would add.</li>
+</ol>
+</div>
+
+<!-- ══════════════════════ 10 ══════════════════════ -->
+<div class="chapter">
+<h2>10 · Tiled Troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+<tr><td>Image layer shows a broken/missing image icon</td>
+<td>The <code>.tmj</code> and the image file moved relative to each other since the layer was created.</td>
+<td>Re-browse the Image field to the file's current location, then re-save/export.</td></tr>
+<tr><td>Objects don't appear in the exported JSON at all</td>
+<td>The object layer is hidden (eye icon off in the Layers panel) — hidden layers still export, so this usually means you're looking at the wrong layer, or objects were accidentally placed on the image layer instead of an object layer.</td>
+<td>Check the Layers panel: objects must live under a layer whose type is Object Layer, not Image Layer or Tile Layer.</td></tr>
+<tr><td><code>KeyError</code> from <code>TiledMap.object_layer()</code></td>
+<td>The name passed in code doesn't match the layer's name in Tiled exactly (case-sensitive).</td>
+<td>Open the <code>.tmj</code> and check the layer's <code>"name"</code> field, or rename the layer in Tiled to match your code.</td></tr>
+<tr><td>Custom property doesn't show up in <code>spec["properties"]</code></td>
+<td>The property was added to the wrong object, or to the layer itself instead of an individual object.</td>
+<td>Click directly on the point/object (not the layer name) in the Layers panel before adding the property.</td></tr>
+<tr><td>Map looks enormous / tiny in the Tiled canvas</td>
+<td>Map width/height (in tiles) doesn't match the background image's actual pixel size ÷ tile size.</td>
+<td>Recompute: <code>tiles_wide = image_width_px / tile_width</code>, and fix it under <span class="ui">Map ▸ Resize Map…</span>.</td></tr>
+<tr><td><code>ValueError: infinite maps aren't supported</code></td>
+<td>"Infinite map" was left checked in the New Map dialog.</td>
+<td>Start a fresh map with it unchecked — there's no toggle to fix this after the fact without recreating the map.</td></tr>
+</table>
+</div>
+
+<!-- ══════════════════════ 11 ══════════════════════ -->
+<div class="chapter">
+<h2>11 · Porting Into M151_Engine</h2>
+<p>
+The Study Guide's Migration Map (Section 9) already flagged
+<code>gameplay/level/level_loader.py</code> and
+<code>gameplay/level/level1.json</code> in your main project as
+<strong>both empty</strong> — a deliberate green field for exactly this.
+Now that you have a working Tiled pipeline here, the recommendation is
+direct:
+</p>
+<ol class="step-list">
+<li>Author your real level in Tiled the same way as this tutorial —
+Image Layer for the existing background art, Object Layer(s) for
+enemies (and anything else you need placed).</li>
+<li>Save it as <code>gameplay/level/level1.tmj</code> instead of the
+empty <code>level1.json</code> — a <code>.tmj</code> file <em>is</em>
+JSON, just with a more conventional extension for Tiled tooling to
+recognize.</li>
+<li>Port <code>engine/tilemap.py</code> into
+<code>gameplay/level/level_loader.py</code> unchanged — it has no
+dependency on anything game-specific, same as every other engine-layer
+file in this project.</li>
+<li>Wire it into whatever Scene/Game structure you built during Week 2
+of the Study Guide, following <code>scenes/tiled_play_scene.py</code>
+here as the template for "read the file, build entities from its object
+layer."</li>
+</ol>
+<div class="footerline">
+M151 Tiled Tutorial — every code sample in this document is real and
+tested: <code>python main_tiled_demo.py</code> runs it. Draw your own
+level whenever you're ready, drop it in as <code>data/level1.tmj</code>,
+and everything else in this engine already knows what to do with it.
+</div>
+</div>
+
+</body>
+</html>

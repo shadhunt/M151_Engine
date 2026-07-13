@@ -1,0 +1,32 @@
+{
+    "enemies": [
+        {
+            "id": "alpha",
+            "spawn_x_from_center": 260,
+            "spawn_y_from_center": 0,
+            "trail": "patrol",
+            "speed": 180
+        },
+        {
+            "id": "bravo",
+            "spawn_x_from_center": -260,
+            "spawn_y_from_center": 0,
+            "trail": "bounce",
+            "speed": 200
+        },
+        {
+            "id": "charlie",
+            "spawn_x_from_center": 0,
+            "spawn_y_from_center": 260,
+            "trail": "zigzag",
+            "speed": 150
+        },
+        {
+            "id": "delta",
+            "spawn_x_from_center": 0,
+            "spawn_y_from_center": -260,
+            "trail": "patrol",
+            "speed": 220
+        }
+    ]
+}

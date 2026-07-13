@@ -1,0 +1,974 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>M151 Simple Engine — Study Guide</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+
+  :root{
+    --ink:#1c2530;
+    --heading:#123a63;
+    --accent:#2563eb;
+    --note-bg:#eef5ff;   --note-border:#2563eb;
+    --why-bg:#fff7ed;    --why-border:#c2660c;
+    --try-bg:#eefaf3;    --try-border:#0f8a5f;
+    --check-bg:#f5f0fe;  --check-border:#6d28d9;
+    --bug-bg:#fef2f2;    --bug-border:#b91c1c;
+    --code-bg:#f4f5f7;
+    --rule:#d7dde5;
+  }
+
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"DejaVu Serif","Noto Serif",serif;
+    font-size:11.3pt;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  h1,h2,h3,h4{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    color:var(--heading);
+    line-height:1.25;
+  }
+  h1{ font-size:23pt; margin:0 0 6mm 0; }
+  h2{ font-size:16pt; border-bottom:2px solid var(--rule); padding-bottom:2mm; margin:0 0 5mm 0; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:7mm 0 2mm 0; }
+  h4{ font-size:11pt; margin:5mm 0 1mm 0; color:var(--accent); }
+
+  p{ margin:0 0 3mm 0; }
+  ul, ol{ margin:0 0 4mm 0; padding-left:5mm; }
+  li{ margin-bottom:1.4mm; }
+
+  code{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    padding:0.5px 4px;
+    border-radius:3px;
+    font-size:9.6pt;
+  }
+  pre{
+    font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;
+    background:var(--code-bg);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+    border-radius:3px;
+    padding:3mm 4mm;
+    font-size:9.3pt;
+    line-height:1.45;
+    white-space:pre-wrap;
+    margin:0 0 4mm 0;
+  }
+  pre code{ background:none; padding:0; border-radius:0; }
+
+  .callout{
+    border-left:4px solid var(--note-border);
+    background:var(--note-bg);
+    padding:3mm 4mm;
+    margin:0 0 4mm 0;
+    border-radius:0 4px 4px 0;
+  }
+  .callout .tag{
+    font-family:"DejaVu Sans","Noto Sans",sans-serif;
+    font-weight:bold;
+    font-size:8.6pt;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:1.2mm;
+    color:var(--note-border);
+  }
+  .callout.why{ background:var(--why-bg); border-left-color:var(--why-border); }
+  .callout.why .tag{ color:var(--why-border); }
+  .callout.try{ background:var(--try-bg); border-left-color:var(--try-border); }
+  .callout.try .tag{ color:var(--try-border); }
+  .callout.check{ background:var(--check-bg); border-left-color:var(--check-border); }
+  .callout.check .tag{ color:var(--check-border); }
+  .callout.bug{ background:var(--bug-bg); border-left-color:var(--bug-border); }
+  .callout.bug .tag{ color:var(--bug-border); }
+
+  table{ border-collapse:collapse; width:100%; margin:0 0 4mm 0; font-size:9.8pt; }
+  th,td{ border:1px solid var(--rule); padding:1.8mm 2.6mm; text-align:left; vertical-align:top; }
+  th{ font-family:"DejaVu Sans",sans-serif; background:#f1f4f8; color:var(--heading); }
+
+  .chapter{ page-break-before:always; }
+  .titlepage{ page-break-after:always; }
+  .no-break{ page-break-inside:avoid; }
+
+  /* -- title page -- */
+  .titlepage{
+    height:250mm;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    border-top:6px solid var(--accent);
+    padding-top:20mm;
+  }
+  .titlepage .kicker{
+    font-family:"DejaVu Sans",sans-serif;
+    color:var(--accent);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:10.5pt;
+    margin-bottom:6mm;
+  }
+  .titlepage h1{ font-size:30pt; margin-bottom:4mm; }
+  .titlepage .subtitle{
+    font-family:"DejaVu Sans",sans-serif;
+    font-size:14pt;
+    color:#3b4657;
+    max-width:135mm;
+    margin-bottom:14mm;
+  }
+  .titlepage .meta{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:9.5pt;
+    color:#5b6577;
+    border-top:1px solid var(--rule);
+    padding-top:4mm;
+    max-width:135mm;
+    line-height:1.7;
+  }
+
+  /* -- toc -- */
+  .toc-list{ list-style:none; padding:0; }
+  .toc-list li{
+    font-family:"DejaVu Sans",sans-serif;
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px dotted var(--rule);
+    padding:2mm 0;
+    margin:0;
+  }
+  .toc-list .num{ color:var(--accent); font-weight:bold; margin-right:3mm; }
+
+  .week-tag{
+    display:inline-block;
+    font-family:"DejaVu Sans",sans-serif;
+    font-size:8.6pt; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase;
+    background:var(--accent); color:#fff;
+    padding:1mm 3mm; border-radius:3px; margin-bottom:3mm;
+  }
+
+  .files-box{
+    font-family:"DejaVu Sans Mono",monospace;
+    font-size:9pt;
+    background:#f8f9fb;
+    border:1px dashed var(--rule);
+    padding:2.5mm 4mm;
+    margin:0 0 4mm 0;
+    color:#3b4657;
+  }
+
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{
+    font-family:"DejaVu Sans",sans-serif;
+    font-size:10.3pt;
+    margin-bottom:2.2mm;
+  }
+  .checklist li::before{ content:"\2610  "; font-family:"DejaVu Sans",sans-serif; color:var(--accent); }
+
+  .step-list{ counter-reset:step; list-style:none; padding-left:0; }
+  .step-list li{
+    counter-increment:step;
+    position:relative;
+    padding-left:8mm;
+    margin-bottom:2.4mm;
+  }
+  .step-list li::before{
+    content: counter(step);
+    position:absolute; left:0; top:0;
+    width:5.5mm; height:5.5mm; border-radius:50%;
+    background:var(--accent); color:#fff;
+    font-family:"DejaVu Sans",sans-serif; font-size:8pt; font-weight:bold;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .glossary dt{
+    font-family:"DejaVu Sans",sans-serif;
+    font-weight:bold; color:var(--heading);
+    margin-top:3mm;
+  }
+  .glossary dd{ margin:0.5mm 0 0 0; }
+
+  .footerline{
+    margin-top:10mm; padding-top:2mm; border-top:1px solid var(--rule);
+    font-family:"DejaVu Sans",sans-serif; font-size:8.5pt; color:#8592a5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ TITLE PAGE ══════════════════════ -->
+<div class="titlepage">
+  <div class="kicker">M151 Engine — examples/simple_engine/docs</div>
+  <h1>Study Guide</h1>
+  <div class="subtitle">
+    A self-paced, offline curriculum: master the reference engine one
+    week at a time, then port each lesson directly into your own
+    M151&nbsp;Engine — file by file.
+  </div>
+  <div class="meta">
+    Companion to: examples/simple_engine/<br>
+    Target project: the M151_Engine repo root (core/, gameplay/, utils/, games/)<br>
+    Pace: four weekly sessions, each self-contained — repeat any week freely<br>
+    No internet required: every answer, formula, and fix is inline
+  </div>
+</div>
+
+<!-- ══════════════════════ TOC ══════════════════════ -->
+<div class="chapter">
+<h2>Table of Contents</h2>
+<ul class="toc-list">
+  <li><span><span class="num">0</span>How To Use This Guide Offline</span><span>Read this first</span></li>
+  <li><span><span class="num">1</span>Week 1 — Time, Space, and the Camera</span><span>dt, world/screen space, camera</span></li>
+  <li><span><span class="num">2</span>Week 2 — Entities, Managers, the Game Loop</span><span>the missing architecture</span></li>
+  <li><span><span class="num">3</span>Week 3 — Animation, Collision, Input</span><span>filling in the empty stubs</span></li>
+  <li><span><span class="num">4</span>Week 4 — Data-Driven Design &amp; Full Port</span><span>the capstone</span></li>
+  <li><span><span class="num">5</span>Glossary</span><span>every term, defined plainly</span></li>
+  <li><span><span class="num">6</span>Offline Debugging Cookbook</span><span>error → cause → fix, no internet needed</span></li>
+  <li><span><span class="num">7</span>Self-Assessment Checklist</span><span>can you, without looking?</span></li>
+  <li><span><span class="num">8</span>Cheat Sheet</span><span>every formula, one page</span></li>
+  <li><span><span class="num">9</span>Migration Map</span><span>simple_engine file → your file → action</span></li>
+</ul>
+</div>
+
+<!-- ══════════════════════ 0. HOW TO USE ══════════════════════ -->
+<div class="chapter">
+<h2>0 · How To Use This Guide Offline</h2>
+
+<p>
+This guide is built for the next few weeks with no internet — no Stack
+Overflow, no docs site, no asking Claude mid-thought. That changes how
+you should study: instead of reading passively, treat every section as a
+loop of four steps.
+</p>
+
+<ol class="step-list">
+<li><strong>Open the file.</strong> Each section names exact files under
+<code>engine/</code>, <code>entities/</code>, or <code>scenes/</code>.
+Open them in an editor before reading the explanation — the guide is a
+companion to the code, not a replacement for reading it.</li>
+<li><strong>Read the Concept.</strong> One idea at a time.</li>
+<li><strong>Answer "Check Yourself" before reading the answer.</strong>
+Cover the answer with your hand or a piece of paper. Getting it wrong and
+then reading why is worth more than reading it once.</li>
+<li><strong>Do the Drill, then the Port-It task.</strong> The Drill
+happens inside <code>examples/simple_engine/</code> — safe to break.
+The Port-It task happens in your real M151_Engine project — this is
+where the studying turns into actual progress on your engine.</li>
+</ol>
+
+<div class="callout why">
+<span class="tag">Why offline changes your debugging habits</span>
+Normally, an unfamiliar traceback gets pasted into a search bar. You
+can't do that for a few weeks, so lean on three things instead: (1) read
+the traceback from the <strong>bottom up</strong> — the last line is the
+actual error, everything above it is just the chain of calls that led
+there; (2) add <code>print()</code> statements liberally and remove them
+later — it's not "cheating," it's how most engine bugs actually get
+found even with internet access; (3) Section 6 of this guide is a
+pre-loaded answer key for the specific errors this kind of code tends to
+produce. Check there before assuming you're stuck.
+</div>
+
+<div class="callout">
+<span class="tag">Keep a notes file</span>
+Create <code>NOTES.md</code> at the root of M151_Engine and jot a dated
+line every time something breaks and you fix it, or something clicks.
+Future you — and any future conversation with Claude once you're back
+online — benefits enormously from a real record of what you actually
+learned, versus trying to reconstruct it from memory weeks later.
+</div>
+
+<p>
+Don't rush. Each "week" assumes a handful of sessions, not one sitting.
+If a week doesn't stick, repeat it before moving on — the weeks build on
+each other, and Week 4's capstone assumes Weeks 1–3 are solid.
+</p>
+</div>
+
+<!-- ══════════════════════ WEEK 1 ══════════════════════ -->
+<div class="chapter">
+<span class="week-tag">Week 1</span>
+<h2>1 · Time, Space, and the Camera</h2>
+<div class="files-box">Open alongside this section:
+engine/config.py · engine/camera.py · entities/player.py</div>
+
+<h3>1.1 — Delta time (dt)</h3>
+<p>
+<strong>Concept.</strong> Every <code>update()</code> multiplies movement
+by <code>dt</code>, the seconds elapsed since the previous frame
+(<code>Game.run()</code> gets it from <code>clock.tick(FPS) / 1000.0</code>).
+A speed of 220 means "220 world pixels per second," full stop — regardless
+of whether the game runs at 30fps, 60fps, or 240fps.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+If <code>PLAYER_SPEED = 220</code> and the game runs at a steady 50fps,
+roughly how many pixels does the player move in one frame? <em>(Cover
+this line before reading on.)</em><br>
+<strong>Answer:</strong> dt ≈ 1/50 = 0.02s. 220 × 0.02 = 4.4 pixels per frame.
+At 60fps it'd be 220 × 0.0167 ≈ 3.7 px/frame — different per-frame step,
+same real-world speed.
+</div>
+<div class="callout try">
+<span class="tag">Drill</span>
+In <code>entities/player.py</code>, temporarily hardcode
+<code>self.world_x += 1</code> (no dt, no speed) inside <code>update()</code>.
+Run the demo and watch the tank's speed change if you resize your
+terminal load or otherwise stress the machine (frame rate drops). That
+visible inconsistency is exactly what dt exists to prevent. Revert the
+change afterward.
+</div>
+
+<h3>1.2 — Three coordinate spaces</h3>
+<p>
+<strong>Concept.</strong> World space is where an entity actually lives
+on the full map (the demo's map is 1920×5760). Camera space is the
+960×540 slice of that map currently visible. Screen space is pixels from
+the window's top-left corner, always in <code>[0, 960) × [0, 540)</code>
+for anything on-screen. <code>Camera.world_to_screen()</code> is the only
+bridge between world space and screen space:
+</p>
+<pre><code>screen_x = world_x - camera.x
+screen_y = world_y - camera.y</code></pre>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+The player is at world (2100, 3080). The camera's top-left is at world
+(1632, 2810). Where does the player get drawn on screen?<br>
+<strong>Answer:</strong> screen_x = 2100 − 1632 = 468. screen_y = 3080 − 2810 = 270.
+Drawn at pixel (468, 270).
+</div>
+<div class="callout why">
+<span class="tag">Why Entity.draw() never touches camera.x/camera.y</span>
+Every entity's <code>draw(surface, camera)</code> calls
+<code>camera.world_to_screen(...)</code> itself and blits at the result —
+it never reaches into <code>camera.x</code> directly. That keeps the
+translation logic in exactly one place, so if you ever change how the
+camera computes its position (e.g. adding screen shake), every entity's
+draw call keeps working unmodified.
+</div>
+
+<h3>1.3 — The camera's dead zone and edge clamp</h3>
+<p>
+<strong>Concept.</strong> <code>Camera.follow()</code> doesn't lock onto
+the player's exact center every frame (that causes jitter on small
+movements) — it only re-aims once the player drifts past a threshold
+(middle-third horizontally, roughly half-to-four-fifths vertically), then
+clamps so the camera can never show past the map edge.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+Near the right edge of the map, does the player's on-screen X position
+stay fixed at the center of the screen, or drift toward the right edge of
+the screen?<br>
+<strong>Answer:</strong> It drifts toward the right edge. The camera's
+<code>self.x</code> gets clamped at <code>map_w - screen_w</code> and stops
+moving, but the player keeps walking — so their screen position (which
+depends on both) keeps increasing until they hit the map's actual edge.
+</div>
+<div class="callout try">
+<span class="tag">Drill</span>
+Run the demo, walk to each of the four map corners, and watch the HUD /
+tank position. Predict, before you get there, whether the tank will sit
+dead-center or slide toward a screen edge at each corner — then verify.
+</div>
+
+<div class="callout bug">
+<span class="tag">A real bug in your project, right now</span>
+Open <code>games/main-simple.py</code> line 41:
+<code>self.player = Entity(world_x=..., world_y=..., frames=...)</code>.
+Compare it against <code>Entity.__init__</code>'s signature in
+<code>core/entities/entity.py</code>, which requires <code>id</code> as
+the first parameter with no default value. Before running it — what
+error do you expect? Then run <code>games/main-simple.py</code> and
+confirm. (Fixing it is a Week 2 Port-It task — for now, just diagnose it.)
+</div>
+</div>
+
+<!-- ══════════════════════ WEEK 2 ══════════════════════ -->
+<div class="chapter">
+<span class="week-tag">Week 2</span>
+<h2>2 · Entities, Managers, and the Game Loop</h2>
+<div class="files-box">Open alongside this section:
+engine/entity.py · engine/entity_manager.py · engine/scene.py ·
+engine/game.py · entities/missile.py</div>
+
+<h3>2.1 — One shape for everything</h3>
+<p>
+<strong>Concept.</strong> <code>Entity</code> is the base class for
+<em>everything</em> that lives in the world: position, size, an
+<code>alive</code> flag, <code>update()</code>, <code>draw()</code>,
+<code>get_hitbox()</code>. <code>Player</code>, <code>Enemy</code>, and
+<code>Missile</code> all inherit from it here.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+Your main project's <code>core/entities/missile.py</code> — does
+<code>Missile</code> inherit from <code>Entity</code>? Open the file and
+check the class declaration.<br>
+<strong>Answer:</strong> No — <code>class Missile:</code> with no base
+class, even though it has <code>world_x</code>/etc. equivalents
+(<code>self.x</code>, <code>self.y</code>) and matching
+<code>update()</code>/<code>draw()</code>/<code>get_hitbox()</code>
+methods. This is exactly the inconsistency that forced every prototype
+to hand-write its own missile-vs-enemy collision check instead of a
+reusable one.
+</div>
+
+<h3>2.2 — EntityManager: one registry, named groups</h3>
+<p>
+<strong>Concept.</strong> Instead of <code>self.enemy</code> (one
+hardcoded slot) or <code>self.missiles</code> (a bare list), every entity
+goes into <code>EntityManager</code> under a named group:
+<code>entities.add(obj, group="enemies")</code>. Update, draw, and
+cleanup become one loop each, regardless of how many groups exist.
+</p>
+<div class="callout why">
+<span class="tag">Why kill() is deferred</span>
+<code>Entity.kill()</code> only sets <code>alive = False</code>.
+Removal happens once per frame, in <code>EntityManager.purge_dead()</code>,
+<em>after</em> collision checks finish.
+</div>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+Why does removing an item from a list <em>while looping over that same
+list</em> cause bugs? Work through this by hand: a list
+<code>[A, B, C]</code>, you're at index 0 (A), you call
+<code>list.remove(A)</code>. What's the list now, and what does the loop
+visit next?<br>
+<strong>Answer:</strong> The list becomes <code>[B, C]</code>. The loop's
+internal index advances to 1, which is now <code>C</code> — <code>B</code>
+got silently skipped. In a collision loop, that's an enemy that "survives"
+a hit purely by chance of ordering.
+</div>
+
+<h3>2.3 — Scene and Game: the loop, written once</h3>
+<p>
+<strong>Concept.</strong> <code>Scene</code> is three empty hook methods
+(<code>handle_event</code>, <code>update</code>, <code>draw</code>).
+<code>Game</code> owns the window and clock, and calls whichever
+<code>Scene</code> is currently active. Swapping scenes is the entire
+mechanism for changing game state.
+</p>
+<div class="callout bug">
+<span class="tag">A bug this project actually hit</span>
+<pre><code>game = Game()          # pygame.init() + set_mode() happen here
+game.run(PlayScene())  # PlayScene is only constructed AFTER that</code></pre>
+<strong>Check yourself:</strong> why can't <code>Game</code> just take a
+<code>Scene</code> directly in its constructor, as in
+<code>Game(PlayScene())</code>?<br>
+<strong>Answer:</strong> Python evaluates arguments before making the
+call — <code>PlayScene()</code> would run first, and its constructor loads
+images via <code>Surface.convert()</code>, which requires a display mode
+to already exist. <code>Game.__init__</code> is what calls
+<code>pygame.display.set_mode()</code>, but it wouldn't get the chance to
+run until <em>after</em> <code>PlayScene()</code> already crashed. This
+is a real ordering bug that came up while building this very demo.
+</div>
+
+<h3>Port-It — Week 2 tasks for your M151_Engine</h3>
+<ol class="step-list">
+<li>Fix <code>core/entities/player.py</code>: its <code>__init__</code>
+takes <code>(self, world_x, world_y, frames)</code> and calls
+<code>super().__init__(world_x, world_y, frames)</code> — but
+<code>Entity.__init__</code> needs <code>id</code> first. Add an
+<code>entity_id</code> parameter and pass it through.</li>
+<li>Give <code>core/entities/entity.py</code> an <code>alive</code> flag
+and a <code>kill()</code> method, matching <code>engine/entity.py</code> here.</li>
+<li>Make <code>core/entities/missile.py</code>'s <code>Missile</code>
+inherit from <code>Entity</code>, following <code>entities/missile.py</code>
+in this demo as the template.</li>
+<li>Create a new <code>core/systems/entity_manager.py</code> — there is
+no equivalent in your project yet. Port <code>engine/entity_manager.py</code>
+in directly; it doesn't depend on anything game-specific.</li>
+<li>Create <code>core/scene.py</code> and <code>core/game.py</code>
+(also missing), and refactor <code>games/main-with_enemy.py</code>'s
+hand-rolled loop into a <code>Scene</code> subclass that plugs into them.
+This is the biggest single upgrade you can make to the project — it's
+what turns three copy-pasted prototypes into one reusable structure.</li>
+</ol>
+</div>
+
+<!-- ══════════════════════ WEEK 3 ══════════════════════ -->
+<div class="chapter">
+<span class="week-tag">Week 3</span>
+<h2>3 · Animation, Collision, Input</h2>
+<div class="files-box">Open alongside this section:
+engine/animation.py · engine/collision.py · engine/input.py</div>
+
+<h3>3.1 — Animator</h3>
+<p>
+<strong>Concept.</strong> <code>Animator</code> stores
+<code>{direction: [Surface, ...]}</code> — even a single Surface gets
+normalized into a one-item list. <code>update()</code> only advances the
+frame index when a direction has more than one frame; a direction with
+exactly one frame never animates. This is why the demo, whose art only
+has one frame per direction, still uses a "real" animation system instead
+of a simpler direction-only lookup — it's already shaped to accept a
+walk-cycle sheet without any caller-side changes.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+If you passed <code>Animator({"right": [frame_a, frame_b, frame_c]},
+fps=6)</code>, roughly how often does the displayed frame change?<br>
+<strong>Answer:</strong> <code>fps=6</code> means
+<code>seconds_per_frame = 1/6 ≈ 0.167s</code>. Every ~167ms,
+<code>_frame_index</code> advances by one, wrapping back to 0 after
+frame_c.
+</div>
+
+<h3>3.2 — Collision</h3>
+<p>
+<strong>Concept.</strong> <code>collision.check_groups(a, b, on_hit)</code>
+builds one list of hitboxes for group B, then checks every entity in
+group A against that list with <code>pygame.Rect.collidelist()</code> — an
+O(n) scan. Hitboxes always come from <code>Entity.get_hitbox()</code>, in
+world space, never screen space.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+Why must collision be computed in world space rather than screen space?<br>
+<strong>Answer:</strong> Screen-space coordinates depend on where the
+camera currently is. Two entities could be perfectly overlapped in the
+world but drawn at different screen offsets mid-frame if you checked
+screen rects computed at different points in the update — world space is
+the single source of truth that doesn't shift under you.
+</div>
+<div class="callout why">
+<span class="tag">Why no spatial grid / quadtree</span>
+O(n) per query is fine at the entity counts a learning project deals
+with — tens, not thousands. Building a spatial partitioning structure
+before you can measure it being too slow is solving a problem you don't
+have. Revisit this only once profiling (not guessing) tells you
+collision is the bottleneck.
+</div>
+
+<h3>3.3 — Input, revisited</h3>
+<p>
+<strong>Concept recap.</strong> Diagonal movement gets multiplied by
+<code>1/√2 ≈ 0.707</code> so its vector length matches a cardinal move's
+length of 1.0 — otherwise diagonal movement is ~41% faster, a side effect
+of the Pythagorean theorem. (Full derivation in the usage guide, Chapter 4,
+if you kept a copy.)
+</p>
+
+<h3>Port-It — Week 3 tasks for your M151_Engine</h3>
+<ol class="step-list">
+<li><code>core/systems/animation.py</code> is currently an <strong>empty,
+0-byte file</strong> in your project. Port <code>engine/animation.py</code>
+into it directly.</li>
+<li><code>core/systems/collision.py</code> is also <strong>empty</strong>.
+Port <code>engine/collision.py</code> in, then replace the repeated
+<code>m.get_hitbox(...).collidelist(...)</code> blocks duplicated across
+<code>games/main-with_enemy.py</code> and
+<code>games/01_Spawner/main-with_spawner.py</code> with one call to
+<code>collision.check_groups()</code>.</li>
+<li><code>utils/resource_loader.py</code> is also <strong>empty</strong> —
+port <code>engine/resource_loader.py</code>'s cache-and-slice pattern in,
+consolidating what <code>gameplay/graphics/graphic_loader.py</code> and
+the older <code>gameplay/actions/unit_actions/main_character_actions.py</code>
+each do separately.</li>
+<li><code>utils/math_utils.py</code> is also <strong>empty</strong> — a
+good home for the diagonal-normalization constant and the sheet
+cell-position formula, both currently duplicated as raw numbers across
+several files.</li>
+</ol>
+</div>
+
+<!-- ══════════════════════ WEEK 4 ══════════════════════ -->
+<div class="chapter">
+<span class="week-tag">Week 4</span>
+<h2>4 · Data-Driven Design &amp; Full Port</h2>
+<div class="files-box">Open alongside this section:
+engine/spawner.py · data/enemies.json · scenes/play_scene.py</div>
+
+<h3>4.1 — The factory-injection pattern</h3>
+<p>
+<strong>Concept.</strong> <code>JSONSpawner</code> doesn't know how to
+build an <code>Enemy</code> — it just reads JSON and calls whatever
+<code>factory</code> function you hand it, once per spec. The factory
+(<code>PlayScene._make_enemy</code>) is what actually knows about
+<code>Enemy</code>. This indirection means the exact same
+<code>JSONSpawner</code> class could spawn pickups, obstacles, or
+anything else, from a totally different JSON file, with zero changes to
+<code>JSONSpawner</code> itself.
+</p>
+<div class="callout check">
+<span class="tag">Check yourself</span>
+If you wanted to add a "pickup" spawner using the same
+<code>JSONSpawner</code> class, what would you actually need to write?<br>
+<strong>Answer:</strong> Just a new factory function — e.g.
+<code>make_pickup(spec, world_x, world_y) -> Pickup</code> — and a call
+like <code>spawner.load("pickups", make_pickup)</code>. Nothing in
+<code>JSONSpawner</code> changes.
+</div>
+
+<h3>4.2 — Offsets from center, not absolute pixels</h3>
+<p>
+<strong>Concept.</strong> <code>enemies.json</code> stores
+<code>spawn_x_from_center</code> / <code>spawn_y_from_center</code>
+rather than absolute coordinates. <code>JSONSpawner.load()</code> adds
+<code>map_w / 2</code> to get the real position. Swap in a
+differently-sized map and the same file still places enemies sensibly.
+</p>
+
+<h3>Port-It — Week 4 tasks (the capstone)</h3>
+<ol class="step-list">
+<li><code>gameplay/spawner/spawner.py</code> is currently
+<strong>empty</strong>. Port <code>engine/spawner.py</code>'s
+<code>JSONSpawner</code> in directly — it has no dependency on
+game-specific code, same as every other <code>engine/</code> file.</li>
+<li><code>gameplay/level/level_loader.py</code> <strong>and</strong>
+<code>gameplay/level/level1.json</code> are both empty — this is your
+green field. Design your own schema (map image path, plus a spawn list
+in the same offset-from-center shape as <code>enemies.json</code>), and
+write a <code>LevelLoader</code> that reads it the way
+<code>PlayScene.__init__</code> reads <code>MAP_IMAGE</code> and
+<code>ENEMIES_JSON</code> here.</li>
+<li><strong>Capstone:</strong> once Weeks 2–4's ports are done, rebuild
+one of <code>games/main-with_enemy.py</code> or
+<code>games/01_Spawner/main-with_spawner.py</code> using
+<em>only</em> the ported <code>core/</code> and <code>gameplay/</code>
+systems — no copy-pasted loop logic, no hand-rolled enemy list. If the
+new version is dramatically shorter than the original, the port worked.
+If it isn't, that's useful information too: it tells you which piece
+didn't actually get consolidated, and that becomes next session's task.</li>
+</ol>
+</div>
+
+<!-- ══════════════════════ 5. GLOSSARY ══════════════════════ -->
+<div class="chapter">
+<h2>5 · Glossary</h2>
+<dl class="glossary">
+
+<dt>Delta time (dt)</dt>
+<dd>Seconds elapsed since the previous frame. Multiplying a speed by dt
+converts "pixels per second" into "pixels this frame," keeping motion
+consistent regardless of frame rate.</dd>
+
+<dt>World space</dt>
+<dd>The coordinate system of the full map — an entity's "true" position,
+independent of what the camera is currently showing.</dd>
+
+<dt>Screen space</dt>
+<dd>Pixel coordinates relative to the window's top-left corner — where
+something is actually drawn. Always derived from world space via the
+camera, never stored directly on an entity.</dd>
+
+<dt>Camera dead zone</dt>
+<dd>A margin in which the camera doesn't re-center on the player every
+frame, preventing jitter from small movements. The camera only moves once
+the player crosses the zone's edge.</dd>
+
+<dt>AABB (Axis-Aligned Bounding Box)</dt>
+<dd>A rectangle that isn't rotated relative to the screen — the simplest
+possible collision shape, and what <code>pygame.Rect</code> represents.</dd>
+
+<dt>Hitbox</dt>
+<dd>The rectangle (usually an AABB) used to test whether one entity
+overlaps another, which may be smaller than the entity's full sprite.</dd>
+
+<dt>Entity</dt>
+<dd>Anything that exists in the game world with a position and a
+lifecycle (created, updated every frame, eventually destroyed).</dd>
+
+<dt>Composition over inheritance</dt>
+<dd>Building behavior by giving an object other objects to delegate to
+(e.g. <code>Player</code> <em>has an</em> <code>Animator</code>) rather
+than by deep inheritance chains. This engine uses both: entities inherit
+from <code>Entity</code> for shared shape, but compose an
+<code>Animator</code> for sprite behavior.</dd>
+
+<dt>Deferred deletion / kill queue</dt>
+<dd>Marking an object dead (<code>alive = False</code>) instead of
+removing it immediately, then sweeping all dead objects out in one pass
+after every system has had a chance to see them this frame. Avoids
+mutate-while-iterating bugs.</dd>
+
+<dt>Scene</dt>
+<dd>One screen or mode of the game (playing, paused, title, game-over).
+Swapping which Scene is active is how the game changes state.</dd>
+
+<dt>Game loop</dt>
+<dd>The <code>while running: handle input → update → draw</code> cycle
+that runs once per frame for the entire life of the program.</dd>
+
+<dt>Factory pattern</dt>
+<dd>A function whose job is "build one of these," passed as a parameter
+so the caller doesn't need to know the concrete type it's building. Used
+here so <code>JSONSpawner</code> can build any kind of entity without
+importing it.</dd>
+
+<dt>Data-driven design</dt>
+<dd>Putting tunable content (enemy positions, speeds, trails) in a data
+file like JSON instead of hardcoding it in source, so changing the game
+doesn't require changing code.</dd>
+
+<dt>Colorkey</dt>
+<dd>A single RGB color treated as fully transparent when blitting — a
+cheap alternative to a real alpha channel, common in older sprite sheets
+(this project's colorkey is cyan, <code>(32, 200, 248)</code>).</dd>
+
+<dt>convert() vs convert_alpha()</dt>
+<dd><code>convert()</code> matches a Surface's pixel format to the
+display for fast blitting, with no per-pixel transparency.
+<code>convert_alpha()</code> does the same but preserves a real alpha
+channel. Both require a display mode to already exist
+(<code>pygame.display.set_mode()</code>), which is why <code>Game</code>
+must be constructed before any Scene that loads images.</dd>
+
+<dt>Sprite sheet</dt>
+<dd>A single image file containing many small sprite frames arranged in
+a grid, cut apart at load time by row/column math instead of shipping one
+file per frame.</dd>
+
+<dt>Vector normalization</dt>
+<dd>Scaling a vector so its length becomes exactly 1.0, without changing
+its direction — used here so diagonal movement isn't faster than
+cardinal movement.</dd>
+
+<dt>Spatial partitioning</dt>
+<dd>Dividing the world into a grid or tree so collision checks only
+compare nearby entities instead of everything against everything. Not
+needed at this project's entity count — see 3.2.</dd>
+
+<dt>Tilemap</dt>
+<dd>A level represented as a grid of small reusable tile images plus a
+2D array of tile indices, instead of one large pre-rendered map image.
+Not used in this demo (see Chapter 9 of the usage guide).</dd>
+
+</dl>
+</div>
+
+<!-- ══════════════════════ 6. COOKBOOK ══════════════════════ -->
+<div class="chapter">
+<h2>6 · Offline Debugging Cookbook</h2>
+<p>Error message (or symptom) → likely cause → fix. Check here before assuming you're stuck.</p>
+
+<table>
+<tr><th>Symptom / error</th><th>Cause</th><th>Fix</th></tr>
+<tr>
+<td><code>pygame.error: cannot convert<br>without pygame.display initialized</code></td>
+<td>An image got loaded (<code>.convert()</code>/<code>.convert_alpha()</code>)
+before <code>pygame.display.set_mode()</code> ran — usually because a
+Scene was constructed before the Game that owns the window.</td>
+<td>Build <code>Game()</code> first (as its own statement), then pass a
+freshly-constructed Scene to <code>game.run(...)</code>. See Week 2.3.</td>
+</tr>
+<tr>
+<td><code>TypeError: __init__() missing 1<br>required positional argument: 'id'</code></td>
+<td>A subclass's <code>__init__</code> forgot to accept and forward an
+<code>id</code>/<code>entity_id</code> to <code>Entity.__init__</code>.</td>
+<td>Add the missing parameter and pass it through
+<code>super().__init__(...)</code>. This exact bug exists in
+<code>core/entities/player.py</code> right now — see Week 1.3.</td>
+</tr>
+<tr>
+<td><code>KeyError: 'right'</code> (or any<br>direction string) indexing a frames dict</td>
+<td>A direction string produced by input/movement code doesn't exactly
+match a key in the sheet's coordinate map — often a typo, or mixing
+<code>"right"</code> vs <code>RIGHT</code> constant vs a different casing.</td>
+<td><code>print(sorted(frames.keys()))</code> next to the failing lookup
+and compare against the direction constants in <code>config.py</code>.</td>
+</tr>
+<tr>
+<td>A hit enemy sometimes doesn't<br>disappear</td>
+<td>Removing from a list while iterating over that same list — the
+element after the removed one gets silently skipped.</td>
+<td>Mark dead with a flag, sweep in a separate pass afterward (deferred
+deletion — see Week 2.2). Never call <code>list.remove()</code> inside a
+<code>for</code> loop over that list.</td>
+</tr>
+<tr>
+<td>Diagonal movement feels<br>noticeably faster</td>
+<td>Diagonal input isn't scaled by <code>1/√2 ≈ 0.707</code>, so its
+vector length is ~1.41 instead of 1.0.</td>
+<td>Multiply both diagonal components by 0.707 before applying speed
+and dt. See Week 1 / Week 3.3.</td>
+</tr>
+<tr>
+<td>Camera jitters or vibrates<br>during small movements</td>
+<td>The camera re-centers on the player's exact position every single
+frame with no tolerance.</td>
+<td>Add a dead zone: only re-aim once the player crosses a threshold
+distance from the camera's current aim point. See Week 1.3.</td>
+</tr>
+<tr>
+<td>Sprite shows the wrong cell,<br>or bleeds into a neighboring one</td>
+<td>Off-by-one in row/col-to-pixel math, or forgetting the 1px separator
+line between cells in the sheet's pitch (33px per cell, not 32px).</td>
+<td>Re-derive <code>x = col_start_x + col * pitch</code> by hand for one
+known-good cell and compare against what the code computes.</td>
+</tr>
+<tr>
+<td>Sprite shows as a solid<br>colored box instead of transparent</td>
+<td>Forgot <code>set_colorkey(...)</code> after slicing, or called
+<code>.convert()</code> on a sheet that actually needs real alpha
+(<code>.convert_alpha()</code>).</td>
+<td>Match the loading method to the art: colorkey sheets need
+<code>set_colorkey</code> after every slice; real-alpha PNGs need
+<code>convert_alpha()</code>, not <code>convert()</code>.</td>
+</tr>
+<tr>
+<td>Window opens and closes<br>instantly, or never draws anything</td>
+<td>Missing <code>pygame.display.flip()</code> at the end of the frame,
+or the event loop isn't reached because of an earlier crash swallowed by
+a broad <code>except</code>.</td>
+<td>Confirm <code>flip()</code> runs every frame; avoid bare
+<code>except:</code> blocks that hide the real traceback.</td>
+</tr>
+<tr>
+<td>Everything moves at wildly<br>different speeds on different runs</td>
+<td>A speed value is being applied without multiplying by <code>dt</code>.</td>
+<td>Every per-frame movement should look like
+<code>position += velocity * dt</code>, never
+<code>position += velocity</code> alone.</td>
+</tr>
+</table>
+</div>
+
+<!-- ══════════════════════ 7. CHECKLIST ══════════════════════ -->
+<div class="chapter">
+<h2>7 · Self-Assessment Checklist</h2>
+<p>Work through each week's list from memory, without opening the code. If more than one or two feel shaky, revisit that week before moving on.</p>
+
+<h3>Week 1 — Time, Space, Camera</h3>
+<ul class="checklist">
+<li>I can explain why multiplying by dt keeps speed frame-rate independent.</li>
+<li>I can name all three coordinate spaces and which one an entity's position is stored in.</li>
+<li>I can write <code>world_to_screen</code> from memory.</li>
+<li>I can explain why the camera has a dead zone instead of centering every frame.</li>
+</ul>
+
+<h3>Week 2 — Entities, Managers, Game Loop</h3>
+<ul class="checklist">
+<li>I can explain why every game object should inherit from one common Entity class.</li>
+<li>I can explain why <code>kill()</code> only sets a flag instead of removing immediately.</li>
+<li>I can explain why <code>Game()</code> must be constructed before any Scene that loads images.</li>
+<li>I know exactly which files in my own project still need this architecture ported in.</li>
+</ul>
+
+<h3>Week 3 — Animation, Collision, Input</h3>
+<ul class="checklist">
+<li>I can explain why Animator normalizes single Surfaces into one-item lists.</li>
+<li>I can explain why collision hitboxes must be computed in world space, not screen space.</li>
+<li>I can explain why this project doesn't use a spatial grid for collision yet.</li>
+<li>I have located (and ideally already filled in) the empty stub files in my own project.</li>
+</ul>
+
+<h3>Week 4 — Data-Driven Design</h3>
+<ul class="checklist">
+<li>I can explain what the factory function passed to JSONSpawner is responsible for.</li>
+<li>I can explain why spawn positions are stored as offsets from map-center.</li>
+<li>I have a working <code>LevelLoader</code> in my own project, even a minimal one.</li>
+<li>I have rebuilt at least one of my own prototypes on top of the ported systems.</li>
+</ul>
+</div>
+
+<!-- ══════════════════════ 8. CHEAT SHEET ══════════════════════ -->
+<div class="chapter">
+<h2>8 · Cheat Sheet</h2>
+<p>Every formula and pattern from this guide, in one place.</p>
+
+<h4>Delta-time movement</h4>
+<pre><code>self.world_x += vx * speed * dt   # speed is "world px / second"</code></pre>
+
+<h4>World → screen</h4>
+<pre><code>screen_x = world_x - camera.x
+screen_y = world_y - camera.y</code></pre>
+
+<h4>Diagonal normalization</h4>
+<pre><code>DIAG = 0.70710678  # 1/sqrt(2)
+# cardinal:  dx, dy = 0, -1        (length 1.0)
+# diagonal:  dx, dy = DIAG, -DIAG  (length 1.0, not 1.414)</code></pre>
+
+<h4>Camera edge clamp</h4>
+<pre><code>self.x = max(0.0, min(target_x, float(map_w - screen_w)))
+self.y = max(0.0, min(target_y, float(map_h - screen_h)))</code></pre>
+
+<h4>Sprite-sheet cell position</h4>
+<pre><code>x = col_start_x + col * cell_pitch   # cell_pitch = cell_size + separator_px
+y = row_start_y + row * cell_pitch</code></pre>
+
+<h4>Deferred kill / purge</h4>
+<pre><code>entity.alive = False                        # mark, don't remove
+...
+group[:] = [e for e in group if e.alive]    # sweep once, after all systems ran</code></pre>
+
+<h4>Group-vs-group collision</h4>
+<pre><code>b_boxes = [b.get_hitbox() for b in group_b]
+for a in group_a:
+    hit = a.get_hitbox().collidelist(b_boxes)
+    if hit != -1:
+        on_hit(a, group_b[hit])</code></pre>
+
+<h4>Factory-injected spawning</h4>
+<pre><code>def load(self, key, factory):
+    for spec in data[key]:
+        x = map_w/2 + spec["spawn_x_from_center"]
+        y = map_h/2 + spec["spawn_y_from_center"]
+        yield factory(spec, x, y)   # factory knows the concrete type; loader doesn't</code></pre>
+
+<h4>Correct startup order</h4>
+<pre><code>game = Game()          # pygame.init() + set_mode() first
+game.run(PlayScene())  # THEN construct anything that loads images</code></pre>
+</div>
+
+<!-- ══════════════════════ 9. MIGRATION MAP ══════════════════════ -->
+<div class="chapter">
+<h2>9 · Migration Map</h2>
+<p>
+Every file in <code>examples/simple_engine/</code>, matched against its
+counterpart in your main M151_Engine project, with its current status
+and the action this guide recommends. This table is the single most
+useful reference for turning four weeks of study into real progress on
+your own engine.
+</p>
+
+<table>
+<tr><th>simple_engine file</th><th>M151_Engine equivalent</th><th>Status</th><th>Action</th></tr>
+<tr><td><code>engine/entity.py</code></td><td><code>core/entities/entity.py</code></td>
+<td>Exists, missing <code>alive</code>/<code>kill()</code></td><td>Add deferred-kill support</td></tr>
+<tr><td><code>engine/entity_manager.py</code></td><td><em>none</em></td>
+<td>Missing entirely</td><td>Create <code>core/systems/entity_manager.py</code></td></tr>
+<tr><td><code>engine/camera.py</code></td><td><code>core/camera/camera.py</code></td>
+<td>Exists, already close</td><td>Confirm parity, keep as-is</td></tr>
+<tr><td><code>engine/animation.py</code></td><td><code>core/systems/animation.py</code></td>
+<td><strong>Empty (0 bytes)</strong></td><td>Port directly</td></tr>
+<tr><td><code>engine/collision.py</code></td><td><code>core/systems/collision.py</code></td>
+<td><strong>Empty (0 bytes)</strong></td><td>Port directly, remove duplicated inline checks</td></tr>
+<tr><td><code>engine/resource_loader.py</code></td><td><code>utils/resource_loader.py</code></td>
+<td><strong>Empty (0 bytes)</strong></td><td>Port directly, consolidate with <code>graphic_loader.py</code></td></tr>
+<tr><td><code>engine/input.py</code></td><td><code>utils/keyboard_controller.py</code></td>
+<td>Exists (older API shape)</td><td>Merge diagonal-normalization logic; keep one version</td></tr>
+<tr><td><code>engine/spawner.py</code></td><td><code>gameplay/spawner/spawner.py</code></td>
+<td><strong>Empty (0 bytes)</strong></td><td>Port directly</td></tr>
+<tr><td><code>engine/scene.py</code> + <code>game.py</code></td><td><em>none</em></td>
+<td>Missing entirely</td><td>Create <code>core/scene.py</code>, <code>core/game.py</code></td></tr>
+<tr><td><code>entities/player.py</code></td><td><code>core/entities/player.py</code></td>
+<td><strong>Exists, broken</strong> (missing <code>id</code> arg)</td><td>Fix constructor — see Week 2</td></tr>
+<tr><td><code>entities/missile.py</code></td><td><code>core/entities/missile.py</code></td>
+<td>Exists, not an <code>Entity</code></td><td>Refactor to inherit <code>Entity</code></td></tr>
+<tr><td><code>entities/enemy.py</code></td><td><code>core/entities/enemy.py</code></td>
+<td>Exists, already close</td><td>Minor unification once Entity gains kill()</td></tr>
+<tr><td><code>data/enemies.json</code></td><td><code>games/01_Spawner/enemies.json</code></td>
+<td>Exists, same shape</td><td>Reuse format for <code>LevelLoader</code></td></tr>
+<tr><td><em>(new concept)</em></td><td><code>gameplay/level/level_loader.py</code> +
+<code>level1.json</code></td><td><strong>Both empty</strong></td>
+<td>Greenfield — design your own schema, Week 4 capstone</td></tr>
+</table>
+
+<div class="footerline">
+M151 Simple Engine Study Guide — every lesson here points at a real file
+in your project. When you're back online, the fastest way to pick this
+back up is: open <code>NOTES.md</code>, check the Self-Assessment
+Checklist, and continue the Migration Map from wherever it stopped.
+</div>
+</div>
+
+</body>
+</html>
