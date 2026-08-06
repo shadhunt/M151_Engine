@@ -20,3 +20,5 @@ _SHEET_PATH = (Path(__file__).parent.      #in action
         / "characters.png")
 
 '''
+
+SPAWNER_PATH = PROJECT_ROOT / "examples" / "enemies_spawner" / "enemies.json"

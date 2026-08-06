@@ -1,5 +1,6 @@
 import pygame
 import sys
+import json
 from pathlib import Path
 
 '''
@@ -20,7 +21,21 @@ from core.entities.enemy import Enemy
 from core.camera.camera import Camera
 from gameplay.graphics.graphic_loader import GraphicLoader
 
+
+SKIN_REGISTRY = {
+    "gray_vehicle": ENEMY_DIRECTION_COORDS,
+}
+
 class Main:
+
+    def spawner_init(self):
+        self._spawner_path = Path(SPAWNER_PATH)
+
+    def load_enemies(self):
+        with open(self._spawner_path) as f:
+            enemy_map = json.load(f)
+        return enemy_map
+    
     def __init__(self):
         #initialization
         pygame.init()
@@ -41,15 +56,30 @@ class Main:
             print("main:",self.map_w, self.map_h)
         self.player = Entity(0,world_x=self.map_w / 2, world_y=self.map_h / 2, frames=self.player_frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
+        
+
+        self.spawner_init()
+        self.load_enemies()
+
+        '''
         self.enemy = Enemy(1,
             world_x=self.map_w / 2 + 260,
             world_y=self.map_h / 2,
             frames=graphic_loader.load_frames(ENEMY_DIRECTION_COORDS),
         )
+        '''
+        enemy_map = self.load_enemies()
+        enemy_data = enemy_map["enemies"][0]
+        enemy_data["id"]
+        skin_coords = SKIN_REGISTRY.get(enemy_data["skin"], ENEMY_DIRECTION_COORDS)
+        frames = graphic_loader.load_frames(skin_coords)
+        self.enemy = Enemy(enemy_data["id"], enemy_data["spawn_x_from_center"], enemy_data["spawn_y_from_center"], frames)
+
         self.running = True
         self.aim_direction: str = UP          # which way the tank is currently facing
         self.missiles: list[Missile] = []
         self.missile_size = Missile.size
+
     def game_loop(self):
         #game loop
         while(self.running):
