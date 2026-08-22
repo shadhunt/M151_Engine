@@ -51,7 +51,7 @@ class ConfigEnemy:
         whichever axis it hits a wall on.
     """
 
-    def __init__(self, id="unknown", world_x, world_y, frames, trail="patrol", speed=ENEMY_SPEED):
+    def __init__(self, world_x, world_y, frames, id="unknown", trail="patrol", speed=ENEMY_SPEED):
         self.id       = id
         self.world_x  = float(world_x)
         self.world_y  = float(world_y)

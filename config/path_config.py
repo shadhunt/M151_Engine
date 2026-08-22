@@ -21,10 +21,7 @@ _SHEET_PATH = (Path(__file__).parent.      #in action
 
 '''
 
-
-
 ## Below are temperarily set up, format and design will be updated
 
 # this is for testing purpose, will be moved to config for each game level and difficulty level later
-ENEMY_JSON_PATH = "config/practice_level/enemies.json"
-
+SPAWNER_PATH = PROJECT_ROOT / "examples" / "enemies_spawner" / "enemies.json"
