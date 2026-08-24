@@ -1,0 +1,14 @@
+{ "columns":128,
+ "image":"..\/..\/..\/assets\/images\/background\/land\/test-land.png",
+ "imageheight":1598,
+ "imagewidth":4113,
+ "margin":0,
+ "name":"test-land",
+ "spacing":0,
+ "tilecount":6272,
+ "tiledversion":"1.12.1",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.10"
+}

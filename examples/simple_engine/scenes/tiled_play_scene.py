@@ -23,8 +23,9 @@ from engine import collision
 from entities.player import Player
 from entities.enemy import Enemy
 from entities.missile import Missile
+from entities.stone import Stone
 
-LEVEL_TMJ = config.DATA_DIR / "level1.tmj"
+LEVEL_TMJ = config.DATA_DIR / "m151_practice_stage.tmj"
 
 
 class TiledPlayScene(Scene):
@@ -66,6 +67,10 @@ class TiledPlayScene(Scene):
             )
             self.entities.add(enemy, group="enemies")
 
+        for spec in tiled_map.object_layer("obstacles"):
+            stone = Stone(spec["name"] or self._new_id(),
+                spec["x"], spec["y"], spec["width"], spec["height"])
+            self.entities.add(stone, group="obstacles")
         self.font = pygame.font.SysFont("monospace", 16)
 
     def _new_id(self):

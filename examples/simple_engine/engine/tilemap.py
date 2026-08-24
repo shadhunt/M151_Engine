@@ -71,5 +71,7 @@ class TiledMap:
             "type": obj.get("type", obj.get("class", "")),
             "x": obj["x"],
             "y": obj["y"],
+            "width": obj.get("width",0),
+            "height":obj.get("height",0),
             "properties": properties,
         }
