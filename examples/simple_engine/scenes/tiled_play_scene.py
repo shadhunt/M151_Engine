@@ -37,7 +37,7 @@ class TiledPlayScene(Scene):
 
         tiled_map = TiledMap(LEVEL_TMJ)
 
-        background = tiled_map.image_layer("background")
+        background = tiled_map.image_layer("Image Layer 1")
         self.map_surface       = self.resources.load_image(background["path"])
         self.map_w, self.map_h = self.map_surface.get_size()
 
