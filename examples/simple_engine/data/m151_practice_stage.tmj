@@ -278,7 +278,9 @@
         }, 
         {
          "id":4,
-         "image":"",
+         "image":"..\/..\/..\/assets\/images\/map\/m151_practice_stage.png",
+         "imageheight":5760,
+         "imagewidth":1920,
          "name":"Image Layer 1",
          "opacity":1,
          "type":"imagelayer",
@@ -286,7 +288,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":5,
+ "nextlayerid":6,
  "nextobjectid":17,
  "orientation":"orthogonal",
  "renderorder":"right-down",

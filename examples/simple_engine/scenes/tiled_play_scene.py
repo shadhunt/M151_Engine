@@ -57,15 +57,15 @@ class TiledPlayScene(Scene):
         # Tiled objects already store absolute world-pixel coordinates --
         # unlike data/enemies.json's offset-from-center convention, there's
         # no map_w/2 math here. The point object's (x, y) IS the spawn point.
-        for spec in tiled_map.object_layer("enemies"):
-            enemy = Enemy(
-                spec["name"] or self._new_id(),
-                spec["x"], spec["y"],
-                self._enemy_frames,
-                trail=spec["properties"].get("trail", "patrol"),
-                speed=spec["properties"].get("speed", config.ENEMY_SPEED),
-            )
-            self.entities.add(enemy, group="enemies")
+        # for spec in tiled_map.object_layer("enemies"):
+        #     enemy = Enemy(
+        #         spec["name"] or self._new_id(),
+        #         spec["x"], spec["y"],
+        #         self._enemy_frames,
+        #         trail=spec["properties"].get("trail", "patrol"),
+        #         speed=spec["properties"].get("speed", config.ENEMY_SPEED),
+        #     )
+        #     self.entities.add(enemy, group="enemies")
 
         for spec in tiled_map.object_layer("obstacles"):
             stone = Stone(spec["name"] or self._new_id(),
