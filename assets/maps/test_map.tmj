@@ -54,7 +54,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"test-land.tsx"
+         "source":"..\/..\/..\/Tiled_M151\/test-land.tsx"
         }],
  "tilewidth":32,
  "type":"map",
