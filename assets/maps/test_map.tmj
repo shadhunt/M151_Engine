@@ -1,0 +1,63 @@
+{ "compressionlevel":-1,
+ "height":9,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[387, 387, 387, 387, 387, 387, 387, 387, 387,
+            387, 387, 901, 901, 901, 901, 901, 901, 387,
+            387, 387, 901, 901, 3772, 3773, 3774, 901, 387,
+            387, 901, 902, 903, 901, 901, 901, 901, 387,
+            387, 901, 1032, 1035, 901, 901, 901, 901, 387,
+            387, 901, 901, 2147485508, 1860, 901, 1037, 901, 387,
+            387, 901, 901, 2147486788, 3140, 901, 901, 901, 387,
+            387, 387, 901, 901, 901, 901, 901, 901, 387,
+            387, 387, 387, 387, 387, 387, 387, 387, 387],
+         "height":9,
+         "id":1,
+         "name":"Tile Layer 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":9,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":2,
+         "name":"Object Layer 1",
+         "objects":[
+                {
+                 "height":0,
+                 "id":1,
+                 "name":"bush_1",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":159.414042063409,
+                 "y":78.9536465418018
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":3,
+ "nextobjectid":4,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.1",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"test-land.tsx"
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":"1.10",
+ "width":9
+}
