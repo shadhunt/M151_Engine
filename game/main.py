@@ -9,12 +9,14 @@ if DEBUG:
 sys.path.append(FRAMEWORK_ROOT)
 from config.properties import *
 from config.path_config import *
-from gameengine.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
-from engine.entities.entity import Entity
-from engine.entities.player import Player
-from engine.camera.camera import Camera
+from config.analog_control_const import *
+
+from gameplay.actions.unit_actions.main_character_actions import load_character_frames, get_direction, show_character_test_screen
+from core.entities.entity import Entity
+from core.entities.player import Player
+from core.camera.camera import Camera
 from utils.keyboard_controller import KeyboardController
-from gameengine.graphics.graphic_loader import GraphicLoader
+from gameplay.graphics.graphic_loader import GraphicLoader
 
 class Main:
     def __init__(self):
@@ -32,10 +34,11 @@ class Main:
         self.map_surface      = pygame.image.load(str(MAP_IMAGE)).convert()
         self.map_w, self.map_h     = self.map_surface.get_size()
 
-        frames           = GraphicLoader.load_frames(CHAR_SHEET)
+        graphic_loader = GraphicLoader(CHAR_SHEET)
+        frames           = graphic_loader.load_frames(PLAYER_DIRECTION_COORDS)
         # Spawn the player near the center of the world map
         print("main:",self.map_w, self.map_h);
-        self.player = Entity(world_x=self.map_w / 2, world_y=self.map_h / 2, frames=frames)
+        self.player = Entity(0, world_x=self.map_w / 2, world_y=self.map_h / 2, frames=frames)
         self.camera = Camera(SCREEN_W, SCREEN_H, self.player)
 
         self.running = True
