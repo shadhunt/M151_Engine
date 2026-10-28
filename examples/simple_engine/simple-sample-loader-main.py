@@ -21,12 +21,37 @@ class Main:
         self.tile_height = self.map_data["tileheight"]
 
         self.tileset_data= self.map_data["tilesets"][0]
+        tileset_path = (self.map_dir / self.tileset_data["source"]).resolve()
+        with tileset_path.open(encoding="utf-8") as file:
+            tileset = json.load(file)
+        image_path = (tileset_path.parent / tileset["image"]).resolve()
+        self.sheet = pygame.image.load(image_path).convert_alpha()
 
-    
+        local_id = 387 - self.tileset_data["firstgid"]
+        tw, th = tileset["tilewidth"], tileset["tileheight"]
+        margin = tileset.get("margin", 0)
+        spacing = tileset.get("spacing", 0)
+
+        x = margin + (local_id % tileset["columns"]) * (tw + spacing)
+        y = margin + (local_id // tileset["columns"]) * (th + spacing)
+        self.test_tile = self.sheet.subsurface((x, y, tw, th))
+
     def game_loop(self):
-        print("in game loop")
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            self.screen.fill((40, 40, 40))
+            self.screen.blit(self.test_tile, (100, 100))
+            pygame.display.flip()
+            self.clock.tick(60)
+
+        pygame.quit()
 
 if __name__ == "__main__":
+    print("Simple Sample Loader v1.0")
     main=Main()
     main.game_loop()
 
@@ -37,7 +62,7 @@ if __name__ == "__main__":
   Step 1: Keep what you need on self.
   screen, map_data, tile_width and tile_height are local variables in __init__, so game_loop can't see them. Save them as self.screen, self.map_data and so on.
 
-  Step 2: Load the tileset data.
+  Step 2: Load the tiles0et data.
   - If tileset_data has a "source" key, the tileset is external. Open map_dir / tileset_data["source"] with json.load, and keep firstgid from the map's entry.
   - If there's no "source", the tileset is embedded, and tileset_data already holds the fields you need.
   - Fields you need: image, columns, tilewidth, tileheight, tilecount, and margin / spacing (both 0 in your file).
