@@ -24,8 +24,7 @@ class Main:
         #initialization
         pygame.init()
         pygame.display.set_caption("Test")
-        self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-        step=200
+        self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))        
         self.clock = pygame.time.Clock()
 
         # Map assets

@@ -24,7 +24,7 @@ class Main:
         pygame.init()
         pygame.display.set_caption("Test")
         self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
-        step=200
+        step=200     #Deprecated, replaced by the SPEED value in the core/entities/entity.py
         self.keyboard_controller = KeyboardController(step)    
         self.frame = load_character_frames()
         self.clock = pygame.time.Clock()
