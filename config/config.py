@@ -11,10 +11,12 @@ from pathlib import Path
 ROOT_DIR   = Path(__file__).resolve().parent.parent      # .../simple_engine
 ASSETS_DIR = ROOT_DIR / "assets"
 DATA_DIR   = ROOT_DIR / "data"
+TILED_MAP    = ASSETS_DIR / "maps/tiled"
 
 CHAR_SHEET   = ASSETS_DIR / "images" / "characters" / "characters.png"
 MAP_IMAGE    = ASSETS_DIR / "images" / "map" / "m151_practice_stage.png"
 ENEMIES_JSON = DATA_DIR / "enemies.json"
+
 
 # ── Display ──────────────────────────────────────────────────────────────────
 SCREEN_W = 960

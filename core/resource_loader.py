@@ -10,7 +10,7 @@ this one class.
 """
 import pygame
 
-from . import config
+from config.config import Config
 
 
 class ResourceLoader:

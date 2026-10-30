@@ -14,18 +14,18 @@ import pygame
 
 from config import config
 from core.scene import Scene
-from engine.resource_loader import ResourceLoader
-from engine.entity_manager import EntityManager
-from engine.camera import Camera
-from engine.tilemap import TiledMap
-from engine import collision
+from core.systems.resource_loader import ResourceLoader
+from core.systems.entity_manager import EntityManager
+from core.camera.camera import Camera
+from core.systems.tilemap import TiledMap
+from core.systems import  collision
 
-from entities.player import Player
-from entities.enemy import Enemy
-from entities.missile import Missile
-from entities.stone import Stone
+from core.entities.player import Player
+from core.entities.enemy import Enemy
+from core.entities.missile import Missile
+from core.entities.stone import Stone
 
-LEVEL_TMJ = config.DATA_DIR / "m151_practice_stage.tmj"
+LEVEL_TMJ = config.TILED_MAP / "m151_practice_stage.tmj"
 
 
 class TiledPlayScene(Scene):
