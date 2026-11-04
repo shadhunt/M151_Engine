@@ -1,7 +1,10 @@
 import pygame
 from config.analog_control_const import UP,UP_LEFT,LEFT,DOWN_LEFT,DOWN,DOWN_RIGHT,RIGHT,UP_RIGHT
+
 class KeyboardController:
     '''
+    Deprescated: replaced by core/input.py
+
     - The 4 key states (up/down/left/right) are captured first, then a single     
   match on the tuple (up, down, left, right) covers all 8 directions cleanly.
   - Diagonal cases (e.g. W+A → UP_LEFT) update both x and y simultaneously.     

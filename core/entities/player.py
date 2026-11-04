@@ -6,10 +6,11 @@ which sprite frame to show for whatever direction we're currently facing.
 """
 import pygame
 
+
 from core.entities.entity import Entity
-from engine.animation import Animator
-from engine.input import InputManager
-from engine import config
+from core.systems.animation import Animator
+from core.input import InputManager
+import config.config as config
 
 
 class Player(Entity):
